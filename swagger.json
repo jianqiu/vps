@@ -273,6 +273,11 @@
         },
         "/vms": {
             "post": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -303,6 +308,11 @@
                 }
             },
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -377,6 +387,11 @@
         },
         "/vms/findByDeployment": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -414,6 +429,11 @@
         },
         "/vms/findByState": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -451,6 +471,11 @@
         },
         "/vms/{cid}": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -486,6 +511,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -524,6 +554,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],

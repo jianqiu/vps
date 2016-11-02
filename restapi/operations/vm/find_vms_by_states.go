@@ -10,16 +10,16 @@ import (
 )
 
 // FindVmsByStatesHandlerFunc turns a function with the right signature into a find vms by states handler
-type FindVmsByStatesHandlerFunc func(FindVmsByStatesParams) middleware.Responder
+type FindVmsByStatesHandlerFunc func(FindVmsByStatesParams, interface{}) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn FindVmsByStatesHandlerFunc) Handle(params FindVmsByStatesParams) middleware.Responder {
-	return fn(params)
+func (fn FindVmsByStatesHandlerFunc) Handle(params FindVmsByStatesParams, principal interface{}) middleware.Responder {
+	return fn(params, principal)
 }
 
 // FindVmsByStatesHandler interface for that can handle valid find vms by states params
 type FindVmsByStatesHandler interface {
-	Handle(FindVmsByStatesParams) middleware.Responder
+	Handle(FindVmsByStatesParams, interface{}) middleware.Responder
 }
 
 // NewFindVmsByStates creates a new http.Handler for the find vms by states operation
@@ -41,12 +41,22 @@ func (o *FindVmsByStates) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, _ := o.Context.RouteInfo(r)
 	var Params = NewFindVmsByStatesParams()
 
+	uprinc, err := o.Context.Authorize(r, route)
+	if err != nil {
+		o.Context.Respond(rw, r, route.Produces, route, err)
+		return
+	}
+	var principal interface{}
+	if uprinc != nil {
+		principal = uprinc
+	}
+
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
 		return
 	}
 
-	res := o.Handler.Handle(Params) // actually handle the request
+	res := o.Handler.Handle(Params, principal) // actually handle the request
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 

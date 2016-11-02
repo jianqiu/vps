@@ -186,6 +186,8 @@ paths:
           description: Invalid username supplied
   /vms:
     post:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Add a new vm to the pool
@@ -206,6 +208,8 @@ paths:
         "405":
           description: Invalid input
     get:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: List vms of the pool
@@ -255,6 +259,8 @@ paths:
           description: Invalid ID supplied
   /vms/findByDeployment:
     get:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Finds Vms by deployment name
@@ -280,6 +286,8 @@ paths:
           description: Invalid deployment name value
   /vms/findByState:
     get:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Finds Vms by states
@@ -305,6 +313,8 @@ paths:
           description: Invalid state value
   /vms/{cid}:
     get:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Find vm by ID
@@ -329,6 +339,8 @@ paths:
         "400":
           description: Invalid ID supplied
     post:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Updates a vm in the pool with state
@@ -355,6 +367,8 @@ paths:
         "405":
           description: Invalid input
     delete:
+      security:
+       - basicAuth: []
       tags:
         - vm
       summary: Deletes a vm from pool

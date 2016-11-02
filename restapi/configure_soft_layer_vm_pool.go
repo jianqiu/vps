@@ -35,7 +35,11 @@ func configureAPI(api *operations.SoftLayerVMPoolAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.VMAddVMHandler = vm.AddVMHandlerFunc(func(params vm.AddVMParams) middleware.Responder {
+	api.BasicAuthAuth = func(user string, pass string) (interface{}, error) {
+		return nil, errors.NotImplemented("basic auth  (basicAuth) has not yet been implemented")
+	}
+
+	api.VMAddVMHandler = vm.AddVMHandlerFunc(func(params vm.AddVMParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.AddVM has not yet been implemented")
 	})
 	api.UserCreateUserHandler = user.CreateUserHandlerFunc(func(params user.CreateUserParams) middleware.Responder {
@@ -50,22 +54,22 @@ func configureAPI(api *operations.SoftLayerVMPoolAPI) http.Handler {
 	api.UserDeleteUserHandler = user.DeleteUserHandlerFunc(func(params user.DeleteUserParams) middleware.Responder {
 		return middleware.NotImplemented("operation user.DeleteUser has not yet been implemented")
 	})
-	api.VMDeleteVMHandler = vm.DeleteVMHandlerFunc(func(params vm.DeleteVMParams) middleware.Responder {
+	api.VMDeleteVMHandler = vm.DeleteVMHandlerFunc(func(params vm.DeleteVMParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.DeleteVM has not yet been implemented")
 	})
-	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(func(params vm.FindVmsByDeploymentParams) middleware.Responder {
+	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(func(params vm.FindVmsByDeploymentParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
 	})
-	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(func(params vm.FindVmsByStatesParams) middleware.Responder {
+	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(func(params vm.FindVmsByStatesParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.FindVmsByStates has not yet been implemented")
 	})
 	api.UserGetUserByNameHandler = user.GetUserByNameHandlerFunc(func(params user.GetUserByNameParams) middleware.Responder {
 		return middleware.NotImplemented("operation user.GetUserByName has not yet been implemented")
 	})
-	api.VMGetVMByCidHandler = vm.GetVMByCidHandlerFunc(func(params vm.GetVMByCidParams) middleware.Responder {
+	api.VMGetVMByCidHandler = vm.GetVMByCidHandlerFunc(func(params vm.GetVMByCidParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.GetVMByCid has not yet been implemented")
 	})
-	api.VMListVMHandler = vm.ListVMHandlerFunc(func(params vm.ListVMParams) middleware.Responder {
+	api.VMListVMHandler = vm.ListVMHandlerFunc(func(params vm.ListVMParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.ListVM has not yet been implemented")
 	})
 	api.UserLoginUserHandler = user.LoginUserHandlerFunc(func(params user.LoginUserParams) middleware.Responder {
@@ -80,7 +84,7 @@ func configureAPI(api *operations.SoftLayerVMPoolAPI) http.Handler {
 	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(func(params vm.UpdateVMParams) middleware.Responder {
 		return middleware.NotImplemented("operation vm.UpdateVM has not yet been implemented")
 	})
-	api.VMUpdateVMWithStateHandler = vm.UpdateVMWithStateHandlerFunc(func(params vm.UpdateVMWithStateParams) middleware.Responder {
+	api.VMUpdateVMWithStateHandler = vm.UpdateVMWithStateHandlerFunc(func(params vm.UpdateVMWithStateParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation vm.UpdateVMWithState has not yet been implemented")
 	})
 
