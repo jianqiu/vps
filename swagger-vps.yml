@@ -1,0 +1,516 @@
+swagger: "2.0"
+info:
+  description: |
+    This is a SoftLayer VM Pool Server.
+
+  version: "0.0.1"
+  title: SoftLayer VM Pool
+  termsOfService: http://helloreverb.com/terms/
+  contact:
+    name: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: vps.swagger.io
+basePath: /v2
+schemes:
+  - http
+paths:
+  /users:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: false
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        default:
+          description: successful operation
+  /users/createWithArray:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: ""
+      operationId: createUsersWithArrayInput
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+      responses:
+        default:
+          description: successful operation
+  /users/createWithList:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: ""
+      operationId: createUsersWithListInput
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+      responses:
+        default:
+          description: successful operation
+  /users/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ""
+      operationId: loginUser
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: username
+          description: The user name for login
+          required: false
+          type: string
+        - in: query
+          name: password
+          description: The password for login in clear text
+          required: false
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: string
+        "400":
+          description: Invalid username/password supplied
+  /users/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ""
+      operationId: logoutUser
+      produces:
+        - application/json
+      responses:
+        default:
+          description: successful operation
+  /users/{username}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ""
+      operationId: getUserByName
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          description: The name that needs to be fetched. Use user1 for testing.
+          required: true
+          type: string
+      responses:
+        "404":
+          description: User not found
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: Invalid username supplied
+    put:
+      tags:
+        - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          description: name that need to be deleted
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated user object
+          required: false
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "404":
+          description: User not found
+        "400":
+          description: Invalid user supplied
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          description: The name that needs to be deleted
+          required: true
+          type: string
+      responses:
+        "404":
+          description: User not found
+        "400":
+          description: Invalid username supplied
+  /vms:
+    post:
+      tags:
+        - vm
+      summary: Add a new vm to the pool
+      description: ""
+      operationId: addVm
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Vm object that needs to be added to the pool
+          required: false
+          schema:
+            $ref: "#/definitions/Vm"
+      responses:
+        "405":
+          description: Invalid input
+    get:
+      tags:
+        - vm
+      summary: List vms of the pool
+      description: ""
+      operationId: listVm
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Vm object that needs to be added to the pool
+          required: false
+          schema:
+            $ref: "#/definitions/VmFilter"
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/VmsResponse"
+    put:
+      tags:
+        - vm
+      summary: Update an existing vm
+      description: ""
+      operationId: updateVm
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Vm object that needs to be added to the pool
+          required: false
+          schema:
+            $ref: "#/definitions/Vm"
+      responses:
+        "405":
+          description: Validation exception
+        "404":
+          description: Vm not found
+        "400":
+          description: Invalid ID supplied
+  /vms/findByDeployment:
+    get:
+      tags:
+        - vm
+      summary: Finds Vms by deployment name
+      description: Multiple deployment values can be provided with comma seperated strings
+      operationId: findVmsByDeployment
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: deployment
+          description: deployment values that need to be considered for filter
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/VmsResponse"
+        "400":
+          description: Invalid deployment name value
+  /vms/findByState:
+    get:
+      tags:
+        - vm
+      summary: Finds Vms by states
+      description: ""
+      operationId: findVmsByStates
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: states
+          description: States to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/VmsResponse"
+        "400":
+          description: Invalid state value
+  /vms/{cid}:
+    get:
+      tags:
+        - vm
+      summary: Find vm by ID
+      description: Returns a vm when ID < 10.  ID > 10 or nonintegers will simulate API error conditions
+      operationId: getVmByCid
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cid
+          description: ID of vm that needs to be fetched
+          required: true
+          type: integer
+          format: int32
+      responses:
+        "404":
+          description: Vm not found
+        "200":
+          description: successful operation
+          schema:
+            $ref: "#/definitions/VmResponse"
+        "400":
+          description: Invalid ID supplied
+    post:
+      tags:
+        - vm
+      summary: Updates a vm in the pool with json
+      description: ""
+      operationId: updateVmWithJson
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cid
+          description: ID of vm that needs to be updated
+          required: true
+          type: integer
+          format: int32
+        - in: body
+          name: body
+          description: Vm state that needs to be updated
+          required: false
+          schema:
+            $ref: "#/definitions/VmState"
+      responses:
+        "405":
+          description: Invalid input
+    delete:
+      tags:
+        - vm
+      summary: Deletes a vm from pool
+      description: ""
+      operationId: deleteVm
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cid
+          description: vm id to delete
+          required: true
+          type: integer
+          format: int32
+      responses:
+        "400":
+          description: Invalid vm value
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      username:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      userStatus:
+        type: integer
+        format: int32
+        description: User Status
+  State:
+    type: string
+    description: Vm State
+    enum:
+    - free
+    - provisioning
+    - using
+  VmState:
+    type: object
+    properties:
+      state:
+        $ref: "#/definitions/State"
+  Vm:
+    type: object
+    properties:
+      cid:
+        type: integer
+        format: int32
+      hostname:
+        type: string
+      cpu:
+        type: integer
+        format: int32
+      memory_mb:
+        type: integer
+        format: int32
+      public_vlan:
+        type: integer
+        format: int32
+      private_vlan:
+        type: integer
+        format: int32
+      ip:
+        type: string
+        format: ipv4
+      state:
+        $ref: "#/definitions/State"
+      deploymentName:
+        type: string
+      createDate:
+        type: string
+        format: date-time
+      modifyDate:
+        type: string
+        format: date-time
+  VmFilter:
+    type: object
+    properties:
+      cid:
+        type: integer
+        format: int32
+      cpu:
+        type: integer
+        format: int32
+      memory_mb:
+        type: integer
+        format: int32
+      public_vlan:
+        type: integer
+        format: int32
+      private_vlan:
+        type: integer
+        format: int32
+      ip:
+        type: string
+        format: ipv4
+      state:
+        $ref: "#/definitions/State"
+  ErrorType:
+    type: string
+    description: Error Types
+    enum:
+    - UnknownError
+    - InvalidDomain
+    - UnkownVersion
+    - InvalidRecord
+    - InvalidRequest
+    - InvalidResponse
+    - InvalidProtobufMessage
+    - InvalidJSON
+    - FailedToOpenEnvelope
+    - InvalidStateTransition
+    - Unauthorized
+    - ResourceConflict
+    - ResourceExist
+    - ResourceNotFound
+    - RouterError
+    - SoftLayerAPIError
+    - GUIDGeneration
+    - Deserialize
+    - Deadlock
+    - Unrecoverable
+  Error:
+    type: object
+    properties:
+      etype:
+        $ref: "#/definitions/ErrorType"
+      message:
+        type: string
+  VmsResponse:
+    type: object
+    properties:
+      error:
+        $ref: "#/definitions/Error"
+      vms:
+        type: array
+        items:
+          $ref: "#/definitions/Vm"
+  VmResponse:
+    type: object
+    properties:
+      error:
+        $ref: "#/definitions/Error"
+      vm:
+        $ref: "#/definitions/Vm"
