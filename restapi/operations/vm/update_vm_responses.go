@@ -7,27 +7,29 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	"github.com/jianqiu/vps/models"
 )
 
-/*UpdateVMBadRequest Invalid ID supplied
+/*UpdateVMOK successful operation
 
-swagger:response updateVmBadRequest
+swagger:response updateVmOK
 */
-type UpdateVMBadRequest struct {
+type UpdateVMOK struct {
 }
 
-// NewUpdateVMBadRequest creates UpdateVMBadRequest with default headers values
-func NewUpdateVMBadRequest() *UpdateVMBadRequest {
-	return &UpdateVMBadRequest{}
+// NewUpdateVMOK creates UpdateVMOK with default headers values
+func NewUpdateVMOK() *UpdateVMOK {
+	return &UpdateVMOK{}
 }
 
 // WriteResponse to the client
-func (o *UpdateVMBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *UpdateVMOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(400)
+	rw.WriteHeader(200)
 }
 
-/*UpdateVMNotFound Vm not found
+/*UpdateVMNotFound vm not found
 
 swagger:response updateVmNotFound
 */
@@ -45,20 +47,57 @@ func (o *UpdateVMNotFound) WriteResponse(rw http.ResponseWriter, producer runtim
 	rw.WriteHeader(404)
 }
 
-/*UpdateVMMethodNotAllowed Validation exception
+/*UpdateVMDefault unexpected error
 
-swagger:response updateVmMethodNotAllowed
+swagger:response updateVmDefault
 */
-type UpdateVMMethodNotAllowed struct {
+type UpdateVMDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
 }
 
-// NewUpdateVMMethodNotAllowed creates UpdateVMMethodNotAllowed with default headers values
-func NewUpdateVMMethodNotAllowed() *UpdateVMMethodNotAllowed {
-	return &UpdateVMMethodNotAllowed{}
+// NewUpdateVMDefault creates UpdateVMDefault with default headers values
+func NewUpdateVMDefault(code int) *UpdateVMDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &UpdateVMDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the update Vm default response
+func (o *UpdateVMDefault) WithStatusCode(code int) *UpdateVMDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the update Vm default response
+func (o *UpdateVMDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the update Vm default response
+func (o *UpdateVMDefault) WithPayload(payload *models.Error) *UpdateVMDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update Vm default response
+func (o *UpdateVMDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *UpdateVMMethodNotAllowed) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *UpdateVMDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(405)
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

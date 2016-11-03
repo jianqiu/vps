@@ -20,6 +20,7 @@ const (
 	StateFree         State = "free"
 	StateProvisioning State = "provisioning"
 	StateUsing        State = "using"
+	StateUnknown        State = "unknown"
 )
 
 // for schema

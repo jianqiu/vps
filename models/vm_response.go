@@ -14,9 +14,6 @@ import (
 // swagger:model VmResponse
 type VMResponse struct {
 
-	// error
-	Error *Error `json:"error,omitempty"`
-
 	// vm
 	VM *VM `json:"vm,omitempty"`
 }
@@ -24,11 +21,6 @@ type VMResponse struct {
 // Validate validates this Vm response
 func (m *VMResponse) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.validateError(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
 
 	if err := m.validateVM(formats); err != nil {
 		// prop
@@ -38,22 +30,6 @@ func (m *VMResponse) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *VMResponse) validateError(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.Error) { // not required
-		return nil
-	}
-
-	if m.Error != nil {
-
-		if err := m.Error.Validate(formats); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 

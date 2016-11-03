@@ -48,20 +48,75 @@ func (o *FindVmsByStatesOK) WriteResponse(rw http.ResponseWriter, producer runti
 	}
 }
 
-/*FindVmsByStatesBadRequest Invalid state value
+/*FindVmsByStatesNotFound vm not found
 
-swagger:response findVmsByStatesBadRequest
+swagger:response findVmsByStatesNotFound
 */
-type FindVmsByStatesBadRequest struct {
+type FindVmsByStatesNotFound struct {
 }
 
-// NewFindVmsByStatesBadRequest creates FindVmsByStatesBadRequest with default headers values
-func NewFindVmsByStatesBadRequest() *FindVmsByStatesBadRequest {
-	return &FindVmsByStatesBadRequest{}
+// NewFindVmsByStatesNotFound creates FindVmsByStatesNotFound with default headers values
+func NewFindVmsByStatesNotFound() *FindVmsByStatesNotFound {
+	return &FindVmsByStatesNotFound{}
 }
 
 // WriteResponse to the client
-func (o *FindVmsByStatesBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *FindVmsByStatesNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(400)
+	rw.WriteHeader(404)
+}
+
+/*FindVmsByStatesDefault unexpected error
+
+swagger:response findVmsByStatesDefault
+*/
+type FindVmsByStatesDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewFindVmsByStatesDefault creates FindVmsByStatesDefault with default headers values
+func NewFindVmsByStatesDefault(code int) *FindVmsByStatesDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &FindVmsByStatesDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the find vms by states default response
+func (o *FindVmsByStatesDefault) WithStatusCode(code int) *FindVmsByStatesDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the find vms by states default response
+func (o *FindVmsByStatesDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the find vms by states default response
+func (o *FindVmsByStatesDefault) WithPayload(payload *models.Error) *FindVmsByStatesDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the find vms by states default response
+func (o *FindVmsByStatesDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *FindVmsByStatesDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

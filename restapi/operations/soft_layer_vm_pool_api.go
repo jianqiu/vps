@@ -11,12 +11,10 @@ import (
 	loads "github.com/go-openapi/loads"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
-	security "github.com/go-openapi/runtime/security"
 	spec "github.com/go-openapi/spec"
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/jianqiu/vps/restapi/operations/user"
 	"github.com/jianqiu/vps/restapi/operations/vm"
 )
 
@@ -48,38 +46,18 @@ type SoftLayerVMPoolAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// BasicAuthAuth registers a function that takes username and password and returns a principal
-	// it performs authentication with basic auth
-	BasicAuthAuth func(string, string) (interface{}, error)
-
 	// VMAddVMHandler sets the operation handler for the add Vm operation
 	VMAddVMHandler vm.AddVMHandler
-	// UserCreateUserHandler sets the operation handler for the create user operation
-	UserCreateUserHandler user.CreateUserHandler
-	// UserCreateUsersWithArrayInputHandler sets the operation handler for the create users with array input operation
-	UserCreateUsersWithArrayInputHandler user.CreateUsersWithArrayInputHandler
-	// UserCreateUsersWithListInputHandler sets the operation handler for the create users with list input operation
-	UserCreateUsersWithListInputHandler user.CreateUsersWithListInputHandler
-	// UserDeleteUserHandler sets the operation handler for the delete user operation
-	UserDeleteUserHandler user.DeleteUserHandler
 	// VMDeleteVMHandler sets the operation handler for the delete Vm operation
 	VMDeleteVMHandler vm.DeleteVMHandler
 	// VMFindVmsByDeploymentHandler sets the operation handler for the find vms by deployment operation
 	VMFindVmsByDeploymentHandler vm.FindVmsByDeploymentHandler
 	// VMFindVmsByStatesHandler sets the operation handler for the find vms by states operation
 	VMFindVmsByStatesHandler vm.FindVmsByStatesHandler
-	// UserGetUserByNameHandler sets the operation handler for the get user by name operation
-	UserGetUserByNameHandler user.GetUserByNameHandler
 	// VMGetVMByCidHandler sets the operation handler for the get Vm by cid operation
 	VMGetVMByCidHandler vm.GetVMByCidHandler
 	// VMListVMHandler sets the operation handler for the list Vm operation
 	VMListVMHandler vm.ListVMHandler
-	// UserLoginUserHandler sets the operation handler for the login user operation
-	UserLoginUserHandler user.LoginUserHandler
-	// UserLogoutUserHandler sets the operation handler for the logout user operation
-	UserLogoutUserHandler user.LogoutUserHandler
-	// UserUpdateUserHandler sets the operation handler for the update user operation
-	UserUpdateUserHandler user.UpdateUserHandler
 	// VMUpdateVMHandler sets the operation handler for the update Vm operation
 	VMUpdateVMHandler vm.UpdateVMHandler
 	// VMUpdateVMWithStateHandler sets the operation handler for the update Vm with state operation
@@ -147,28 +125,8 @@ func (o *SoftLayerVMPoolAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.BasicAuthAuth == nil {
-		unregistered = append(unregistered, "BasicAuthAuth")
-	}
-
 	if o.VMAddVMHandler == nil {
 		unregistered = append(unregistered, "vm.AddVMHandler")
-	}
-
-	if o.UserCreateUserHandler == nil {
-		unregistered = append(unregistered, "user.CreateUserHandler")
-	}
-
-	if o.UserCreateUsersWithArrayInputHandler == nil {
-		unregistered = append(unregistered, "user.CreateUsersWithArrayInputHandler")
-	}
-
-	if o.UserCreateUsersWithListInputHandler == nil {
-		unregistered = append(unregistered, "user.CreateUsersWithListInputHandler")
-	}
-
-	if o.UserDeleteUserHandler == nil {
-		unregistered = append(unregistered, "user.DeleteUserHandler")
 	}
 
 	if o.VMDeleteVMHandler == nil {
@@ -183,28 +141,12 @@ func (o *SoftLayerVMPoolAPI) Validate() error {
 		unregistered = append(unregistered, "vm.FindVmsByStatesHandler")
 	}
 
-	if o.UserGetUserByNameHandler == nil {
-		unregistered = append(unregistered, "user.GetUserByNameHandler")
-	}
-
 	if o.VMGetVMByCidHandler == nil {
 		unregistered = append(unregistered, "vm.GetVMByCidHandler")
 	}
 
 	if o.VMListVMHandler == nil {
 		unregistered = append(unregistered, "vm.ListVMHandler")
-	}
-
-	if o.UserLoginUserHandler == nil {
-		unregistered = append(unregistered, "user.LoginUserHandler")
-	}
-
-	if o.UserLogoutUserHandler == nil {
-		unregistered = append(unregistered, "user.LogoutUserHandler")
-	}
-
-	if o.UserUpdateUserHandler == nil {
-		unregistered = append(unregistered, "user.UpdateUserHandler")
 	}
 
 	if o.VMUpdateVMHandler == nil {
@@ -230,17 +172,7 @@ func (o *SoftLayerVMPoolAPI) ServeErrorFor(operationID string) func(http.Respons
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *SoftLayerVMPoolAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	result := make(map[string]runtime.Authenticator)
-	for name, scheme := range schemes {
-		switch name {
-
-		case "basicAuth":
-			_ = scheme
-			result[name] = security.BasicAuth(o.BasicAuthAuth)
-
-		}
-	}
-	return result
+	return nil
 
 }
 
@@ -310,26 +242,6 @@ func (o *SoftLayerVMPoolAPI) initHandlerCache() {
 	}
 	o.handlers["POST"]["/vms"] = vm.NewAddVM(o.context, o.VMAddVMHandler)
 
-	if o.handlers["POST"] == nil {
-		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/users"] = user.NewCreateUser(o.context, o.UserCreateUserHandler)
-
-	if o.handlers["POST"] == nil {
-		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/users/createWithArray"] = user.NewCreateUsersWithArrayInput(o.context, o.UserCreateUsersWithArrayInputHandler)
-
-	if o.handlers["POST"] == nil {
-		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/users/createWithList"] = user.NewCreateUsersWithListInput(o.context, o.UserCreateUsersWithListInputHandler)
-
-	if o.handlers["DELETE"] == nil {
-		o.handlers[strings.ToUpper("DELETE")] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/users/{username}"] = user.NewDeleteUser(o.context, o.UserDeleteUserHandler)
-
 	if o.handlers["DELETE"] == nil {
 		o.handlers[strings.ToUpper("DELETE")] = make(map[string]http.Handler)
 	}
@@ -348,11 +260,6 @@ func (o *SoftLayerVMPoolAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/users/{username}"] = user.NewGetUserByName(o.context, o.UserGetUserByNameHandler)
-
-	if o.handlers["GET"] == nil {
-		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
-	}
 	o.handlers["GET"]["/vms/{cid}"] = vm.NewGetVMByCid(o.context, o.VMGetVMByCidHandler)
 
 	if o.handlers["GET"] == nil {
@@ -360,30 +267,15 @@ func (o *SoftLayerVMPoolAPI) initHandlerCache() {
 	}
 	o.handlers["GET"]["/vms"] = vm.NewListVM(o.context, o.VMListVMHandler)
 
-	if o.handlers["GET"] == nil {
-		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/users/login"] = user.NewLoginUser(o.context, o.UserLoginUserHandler)
-
-	if o.handlers["GET"] == nil {
-		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/users/logout"] = user.NewLogoutUser(o.context, o.UserLogoutUserHandler)
-
-	if o.handlers["PUT"] == nil {
-		o.handlers[strings.ToUpper("PUT")] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/users/{username}"] = user.NewUpdateUser(o.context, o.UserUpdateUserHandler)
-
 	if o.handlers["PUT"] == nil {
 		o.handlers[strings.ToUpper("PUT")] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/vms"] = vm.NewUpdateVM(o.context, o.VMUpdateVMHandler)
 
-	if o.handlers["POST"] == nil {
-		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
+	if o.handlers["PUT"] == nil {
+		o.handlers[strings.ToUpper("PUT")] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/vms/{cid}"] = vm.NewUpdateVMWithState(o.context, o.VMUpdateVMWithStateHandler)
+	o.handlers["PUT"]["/vms/{cid}"] = vm.NewUpdateVMWithState(o.context, o.VMUpdateVMWithStateHandler)
 
 }
 

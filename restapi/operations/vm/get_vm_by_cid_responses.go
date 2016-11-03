@@ -48,25 +48,7 @@ func (o *GetVMByCidOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pr
 	}
 }
 
-/*GetVMByCidBadRequest Invalid ID supplied
-
-swagger:response getVmByCidBadRequest
-*/
-type GetVMByCidBadRequest struct {
-}
-
-// NewGetVMByCidBadRequest creates GetVMByCidBadRequest with default headers values
-func NewGetVMByCidBadRequest() *GetVMByCidBadRequest {
-	return &GetVMByCidBadRequest{}
-}
-
-// WriteResponse to the client
-func (o *GetVMByCidBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.WriteHeader(400)
-}
-
-/*GetVMByCidNotFound Vm not found
+/*GetVMByCidNotFound vm not found
 
 swagger:response getVmByCidNotFound
 */
@@ -82,4 +64,59 @@ func NewGetVMByCidNotFound() *GetVMByCidNotFound {
 func (o *GetVMByCidNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(404)
+}
+
+/*GetVMByCidDefault unexpected error
+
+swagger:response getVmByCidDefault
+*/
+type GetVMByCidDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetVMByCidDefault creates GetVMByCidDefault with default headers values
+func NewGetVMByCidDefault(code int) *GetVMByCidDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &GetVMByCidDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the get Vm by cid default response
+func (o *GetVMByCidDefault) WithStatusCode(code int) *GetVMByCidDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the get Vm by cid default response
+func (o *GetVMByCidDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the get Vm by cid default response
+func (o *GetVMByCidDefault) WithPayload(payload *models.Error) *GetVMByCidDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get Vm by cid default response
+func (o *GetVMByCidDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetVMByCidDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

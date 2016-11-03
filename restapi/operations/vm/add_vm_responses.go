@@ -7,22 +7,79 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	"github.com/jianqiu/vps/models"
 )
 
-/*AddVMMethodNotAllowed Invalid input
+/*AddVMOK successful operation
 
-swagger:response addVmMethodNotAllowed
+swagger:response addVmOK
 */
-type AddVMMethodNotAllowed struct {
+type AddVMOK struct {
 }
 
-// NewAddVMMethodNotAllowed creates AddVMMethodNotAllowed with default headers values
-func NewAddVMMethodNotAllowed() *AddVMMethodNotAllowed {
-	return &AddVMMethodNotAllowed{}
+// NewAddVMOK creates AddVMOK with default headers values
+func NewAddVMOK() *AddVMOK {
+	return &AddVMOK{}
 }
 
 // WriteResponse to the client
-func (o *AddVMMethodNotAllowed) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *AddVMOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(405)
+	rw.WriteHeader(200)
+}
+
+/*AddVMDefault unexpected error
+
+swagger:response addVmDefault
+*/
+type AddVMDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewAddVMDefault creates AddVMDefault with default headers values
+func NewAddVMDefault(code int) *AddVMDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &AddVMDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the add Vm default response
+func (o *AddVMDefault) WithStatusCode(code int) *AddVMDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the add Vm default response
+func (o *AddVMDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the add Vm default response
+func (o *AddVMDefault) WithPayload(payload *models.Error) *AddVMDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the add Vm default response
+func (o *AddVMDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *AddVMDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

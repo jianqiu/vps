@@ -10,11 +10,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jianqiu/vps/db"
 	"github.com/go-openapi/swag"
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/jianqiu/vps/restapi/operations"
+	"code.cloudfoundry.org/lager"
 )
 
 const (
@@ -39,9 +41,12 @@ func NewServer(api *operations.SoftLayerVMPoolAPI) *Server {
 }
 
 // ConfigureAPI configures the API and handlers. Needs to be called before Serve
-func (s *Server) ConfigureAPI() {
+func (s *Server) ConfigureAPI(logger lager.Logger,
+db db.DB,
+migrationsDone <-chan struct{},
+) {
 	if s.api != nil {
-		s.handler = configureAPI(s.api)
+		s.handler = configureAPI(s.api, logger, db, migrationsDone)
 	}
 }
 
@@ -104,7 +109,7 @@ func (s *Server) SetAPI(api *operations.SoftLayerVMPoolAPI) {
 
 	s.api = api
 	s.api.Logger = log.Printf
-	s.handler = configureAPI(api)
+	s.handler = configureAPI(api,nil,nil,nil)
 }
 
 func (s *Server) hasScheme(scheme string) bool {
@@ -153,7 +158,7 @@ func (s *Server) Serve() (err error) {
 		httpServer.Handler = s.handler
 
 		wg.Add(1)
-		s.Logf("Serving soft layer VM pool at http://%s", s.httpServerL.Addr())
+		s.Logf("Serving SoftLayer VM pool at http://%s", s.httpServerL.Addr())
 		go func(l net.Listener) {
 			defer wg.Done()
 			if err := httpServer.Serve(l); err != nil {

@@ -14,9 +14,6 @@ import (
 // swagger:model VmsResponse
 type VmsResponse struct {
 
-	// error
-	Error *Error `json:"error,omitempty"`
-
 	// vms
 	Vms []*VM `json:"vms"`
 }
@@ -24,11 +21,6 @@ type VmsResponse struct {
 // Validate validates this vms response
 func (m *VmsResponse) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.validateError(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
 
 	if err := m.validateVms(formats); err != nil {
 		// prop
@@ -38,22 +30,6 @@ func (m *VmsResponse) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *VmsResponse) validateError(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.Error) { // not required
-		return nil
-	}
-
-	if m.Error != nil {
-
-		if err := m.Error.Validate(formats); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 

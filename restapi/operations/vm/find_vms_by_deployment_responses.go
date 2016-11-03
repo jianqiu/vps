@@ -48,20 +48,75 @@ func (o *FindVmsByDeploymentOK) WriteResponse(rw http.ResponseWriter, producer r
 	}
 }
 
-/*FindVmsByDeploymentBadRequest Invalid deployment name value
+/*FindVmsByDeploymentNotFound vm not found
 
-swagger:response findVmsByDeploymentBadRequest
+swagger:response findVmsByDeploymentNotFound
 */
-type FindVmsByDeploymentBadRequest struct {
+type FindVmsByDeploymentNotFound struct {
 }
 
-// NewFindVmsByDeploymentBadRequest creates FindVmsByDeploymentBadRequest with default headers values
-func NewFindVmsByDeploymentBadRequest() *FindVmsByDeploymentBadRequest {
-	return &FindVmsByDeploymentBadRequest{}
+// NewFindVmsByDeploymentNotFound creates FindVmsByDeploymentNotFound with default headers values
+func NewFindVmsByDeploymentNotFound() *FindVmsByDeploymentNotFound {
+	return &FindVmsByDeploymentNotFound{}
 }
 
 // WriteResponse to the client
-func (o *FindVmsByDeploymentBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *FindVmsByDeploymentNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(400)
+	rw.WriteHeader(404)
+}
+
+/*FindVmsByDeploymentDefault unexpected error
+
+swagger:response findVmsByDeploymentDefault
+*/
+type FindVmsByDeploymentDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewFindVmsByDeploymentDefault creates FindVmsByDeploymentDefault with default headers values
+func NewFindVmsByDeploymentDefault(code int) *FindVmsByDeploymentDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &FindVmsByDeploymentDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the find vms by deployment default response
+func (o *FindVmsByDeploymentDefault) WithStatusCode(code int) *FindVmsByDeploymentDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the find vms by deployment default response
+func (o *FindVmsByDeploymentDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the find vms by deployment default response
+func (o *FindVmsByDeploymentDefault) WithPayload(payload *models.Error) *FindVmsByDeploymentDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the find vms by deployment default response
+func (o *FindVmsByDeploymentDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *FindVmsByDeploymentDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

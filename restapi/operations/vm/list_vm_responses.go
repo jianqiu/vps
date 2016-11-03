@@ -48,20 +48,75 @@ func (o *ListVMOK) WriteResponse(rw http.ResponseWriter, producer runtime.Produc
 	}
 }
 
-/*ListVMMethodNotAllowed Invalid input
+/*ListVMNotFound vm not found
 
-swagger:response listVmMethodNotAllowed
+swagger:response listVmNotFound
 */
-type ListVMMethodNotAllowed struct {
+type ListVMNotFound struct {
 }
 
-// NewListVMMethodNotAllowed creates ListVMMethodNotAllowed with default headers values
-func NewListVMMethodNotAllowed() *ListVMMethodNotAllowed {
-	return &ListVMMethodNotAllowed{}
+// NewListVMNotFound creates ListVMNotFound with default headers values
+func NewListVMNotFound() *ListVMNotFound {
+	return &ListVMNotFound{}
 }
 
 // WriteResponse to the client
-func (o *ListVMMethodNotAllowed) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *ListVMNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(405)
+	rw.WriteHeader(404)
+}
+
+/*ListVMDefault unexpected error
+
+swagger:response listVmDefault
+*/
+type ListVMDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewListVMDefault creates ListVMDefault with default headers values
+func NewListVMDefault(code int) *ListVMDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &ListVMDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the list Vm default response
+func (o *ListVMDefault) WithStatusCode(code int) *ListVMDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the list Vm default response
+func (o *ListVMDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the list Vm default response
+func (o *ListVMDefault) WithPayload(payload *models.Error) *ListVMDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list Vm default response
+func (o *ListVMDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ListVMDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

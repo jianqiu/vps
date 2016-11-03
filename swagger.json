@@ -19,265 +19,8 @@
         "http"
     ],
     "paths": {
-        "/users": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Create user",
-                "description": "This can only be done by the logged in user.",
-                "operationId": "createUser",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Created user object",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/users/createWithArray": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Creates list of users with given input array",
-                "description": "",
-                "operationId": "createUsersWithArrayInput",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "List of user object",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/User"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/users/createWithList": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Creates list of users with given input array",
-                "description": "",
-                "operationId": "createUsersWithListInput",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "List of user object",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/User"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/users/login": {
-            "get": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Logs user into the system",
-                "description": "",
-                "operationId": "loginUser",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "username",
-                        "description": "The user name for login",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "password",
-                        "description": "The password for login in clear text",
-                        "required": false,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid username/password supplied"
-                    }
-                }
-            }
-        },
-        "/users/logout": {
-            "get": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Logs out current logged in user session",
-                "description": "",
-                "operationId": "logoutUser",
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/users/{username}": {
-            "get": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Get user by user name",
-                "description": "",
-                "operationId": "getUserByName",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "username",
-                        "description": "The name that needs to be fetched. Use user1 for testing.",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid username supplied"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Updated user",
-                "description": "This can only be done by the logged in user.",
-                "operationId": "updateUser",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "username",
-                        "description": "name that need to be deleted",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Updated user object",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid user supplied"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Delete user",
-                "description": "This can only be done by the logged in user.",
-                "operationId": "deleteUser",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "username",
-                        "description": "The name that needs to be deleted",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid username supplied"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            }
-        },
         "/vms": {
             "post": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -302,17 +45,18 @@
                     }
                 ],
                 "responses": {
-                    "405": {
-                        "description": "Invalid input"
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
             "get": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -343,8 +87,14 @@
                             "$ref": "#/definitions/VmsResponse"
                         }
                     },
-                    "405": {
-                        "description": "Invalid input"
+                    "404": {
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
@@ -373,25 +123,23 @@
                     }
                 ],
                 "responses": {
-                    "400": {
-                        "description": "Invalid ID supplied"
+                    "200": {
+                        "description": "successful operation"
                     },
                     "404": {
-                        "description": "Vm not found"
+                        "description": "vm not found"
                     },
-                    "405": {
-                        "description": "Validation exception"
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             }
         },
         "/vms/findByDeployment": {
             "get": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -421,19 +169,20 @@
                             "$ref": "#/definitions/VmsResponse"
                         }
                     },
-                    "400": {
-                        "description": "Invalid deployment name value"
+                    "404": {
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             }
         },
         "/vms/findByState": {
             "get": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -463,19 +212,20 @@
                             "$ref": "#/definitions/VmsResponse"
                         }
                     },
-                    "400": {
-                        "description": "Invalid state value"
+                    "404": {
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             }
         },
         "/vms/{cid}": {
             "get": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -502,20 +252,18 @@
                             "$ref": "#/definitions/VmResponse"
                         }
                     },
-                    "400": {
-                        "description": "Invalid ID supplied"
-                    },
                     "404": {
-                        "description": "Vm not found"
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
-            "post": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
+            "put": {
                 "tags": [
                     "vm"
                 ],
@@ -548,17 +296,21 @@
                     }
                 ],
                 "responses": {
-                    "405": {
-                        "description": "Invalid input"
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "404": {
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
                 "tags": [
                     "vm"
                 ],
@@ -579,31 +331,23 @@
                     }
                 ],
                 "responses": {
-                    "400": {
-                        "description": "Invalid vm value"
+                    "204": {
+                        "description": "successful operation"
+                    },
+                    "404": {
+                        "description": "vm not found"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
                     }
                 }
             }
         }
     },
-    "securityDefinitions": {
-        "basicAuth": {
-            "type": "basic",
-            "description": "HTTP Basic Authentication. Works over `HTTP` and `HTTPS`"
-        }
-    },
     "definitions": {
-        "User": {
-            "type": "object",
-            "properties": {
-                "username": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "State": {
             "type": "string",
             "description": "Vm State",
@@ -728,7 +472,7 @@
         "Error": {
             "type": "object",
             "properties": {
-                "etype": {
+                "type": {
                     "$ref": "#/definitions/ErrorType"
                 },
                 "message": {
@@ -739,9 +483,6 @@
         "VmsResponse": {
             "type": "object",
             "properties": {
-                "error": {
-                    "$ref": "#/definitions/Error"
-                },
                 "vms": {
                     "type": "array",
                     "items": {
@@ -753,9 +494,6 @@
         "VmResponse": {
             "type": "object",
             "properties": {
-                "error": {
-                    "$ref": "#/definitions/Error"
-                },
                 "vm": {
                     "$ref": "#/definitions/Vm"
                 }

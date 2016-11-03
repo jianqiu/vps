@@ -14,18 +14,18 @@ import (
 // swagger:model Error
 type Error struct {
 
-	// etype
-	Etype ErrorType `json:"etype,omitempty"`
-
 	// message
 	Message string `json:"message,omitempty"`
+
+	// type
+	Type ErrorType `json:"type,omitempty"`
 }
 
 // Validate validates this error
 func (m *Error) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateEtype(formats); err != nil {
+	if err := m.validateType(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -36,13 +36,13 @@ func (m *Error) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Error) validateEtype(formats strfmt.Registry) error {
+func (m *Error) validateType(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Etype) { // not required
+	if swag.IsZero(m.Type) { // not required
 		return nil
 	}
 
-	if err := m.Etype.Validate(formats); err != nil {
+	if err := m.Type.Validate(formats); err != nil {
 		return err
 	}
 

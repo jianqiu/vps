@@ -7,22 +7,97 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	"github.com/jianqiu/vps/models"
 )
 
-/*UpdateVMWithStateMethodNotAllowed Invalid input
+/*UpdateVMWithStateOK successful operation
 
-swagger:response updateVmWithStateMethodNotAllowed
+swagger:response updateVmWithStateOK
 */
-type UpdateVMWithStateMethodNotAllowed struct {
+type UpdateVMWithStateOK struct {
 }
 
-// NewUpdateVMWithStateMethodNotAllowed creates UpdateVMWithStateMethodNotAllowed with default headers values
-func NewUpdateVMWithStateMethodNotAllowed() *UpdateVMWithStateMethodNotAllowed {
-	return &UpdateVMWithStateMethodNotAllowed{}
+// NewUpdateVMWithStateOK creates UpdateVMWithStateOK with default headers values
+func NewUpdateVMWithStateOK() *UpdateVMWithStateOK {
+	return &UpdateVMWithStateOK{}
 }
 
 // WriteResponse to the client
-func (o *UpdateVMWithStateMethodNotAllowed) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *UpdateVMWithStateOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(405)
+	rw.WriteHeader(200)
+}
+
+/*UpdateVMWithStateNotFound vm not found
+
+swagger:response updateVmWithStateNotFound
+*/
+type UpdateVMWithStateNotFound struct {
+}
+
+// NewUpdateVMWithStateNotFound creates UpdateVMWithStateNotFound with default headers values
+func NewUpdateVMWithStateNotFound() *UpdateVMWithStateNotFound {
+	return &UpdateVMWithStateNotFound{}
+}
+
+// WriteResponse to the client
+func (o *UpdateVMWithStateNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+}
+
+/*UpdateVMWithStateDefault unexpected error
+
+swagger:response updateVmWithStateDefault
+*/
+type UpdateVMWithStateDefault struct {
+	_statusCode int
+
+	// In: body
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewUpdateVMWithStateDefault creates UpdateVMWithStateDefault with default headers values
+func NewUpdateVMWithStateDefault(code int) *UpdateVMWithStateDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &UpdateVMWithStateDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the update Vm with state default response
+func (o *UpdateVMWithStateDefault) WithStatusCode(code int) *UpdateVMWithStateDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the update Vm with state default response
+func (o *UpdateVMWithStateDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the update Vm with state default response
+func (o *UpdateVMWithStateDefault) WithPayload(payload *models.Error) *UpdateVMWithStateDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update Vm with state default response
+func (o *UpdateVMWithStateDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *UpdateVMWithStateDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		if err := producer.Produce(rw, o.Payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
