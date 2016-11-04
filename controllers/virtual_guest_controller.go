@@ -26,7 +26,7 @@ func (h *VirtualGuestController) AllVirtualGuests(logger lager.Logger) ([]*model
 	return h.db.VirtualGuests(logger, filter)
 }
 
-func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32) ([]*models.VM, error) {
+func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32, state models.State) ([]*models.VM, error) {
 	logger = logger.Session("vms")
 
 	filter := models.VMFilter{
@@ -34,6 +34,7 @@ func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, 
 		MemoryMb: memory_mb,
 		PublicVlan: publicVlan,
 		PrivateVlan: privateVlan,
+		State: state,
 	}
 
 	return h.db.VirtualGuests(logger, filter)

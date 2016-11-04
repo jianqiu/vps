@@ -11,11 +11,14 @@ import (
 	"github.com/jianqiu/vps/models"
 )
 
-/*UpdateVMWithStateOK successful operation
+/*UpdateVMWithStateOK state updated successfully
 
 swagger:response updateVmWithStateOK
 */
 type UpdateVMWithStateOK struct {
+
+	// In: body
+	Payload string `json:"body,omitempty"`
 }
 
 // NewUpdateVMWithStateOK creates UpdateVMWithStateOK with default headers values
@@ -23,10 +26,25 @@ func NewUpdateVMWithStateOK() *UpdateVMWithStateOK {
 	return &UpdateVMWithStateOK{}
 }
 
+// WithPayload adds the payload to the update Vm with state o k response
+func (o *UpdateVMWithStateOK) WithPayload(payload string) *UpdateVMWithStateOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update Vm with state o k response
+func (o *UpdateVMWithStateOK) SetPayload(payload string) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *UpdateVMWithStateOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	if err := producer.Produce(rw, o.Payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*UpdateVMWithStateNotFound vm not found

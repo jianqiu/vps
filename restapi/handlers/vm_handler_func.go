@@ -10,7 +10,7 @@ import (
 
 type VirtualGuestController interface {
 	AllVirtualGuests(logger lager.Logger) ([]*models.VM, error)
-	VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32) ([]*models.VM, error)
+	VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32, state models.State) ([]*models.VM, error)
 	CreateVM(logger lager.Logger, vm *models.VM) error
 	DeleteVM(logger lager.Logger, cid int32) error
 	UpdateVM(logger lager.Logger, cid int32, updateData *models.State) error
@@ -30,7 +30,6 @@ controller VirtualGuestController,
 type VMHandler struct {
 	logger lager.Logger
 	controller VirtualGuestController
-	exitChan   chan<- struct{}
 }
 
 func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
@@ -101,9 +100,9 @@ func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 	h.logger = h.logger.Session("list-vm")
 
 	response := &models.VmsResponse{}
-	request := params.Body
 
-	response.Vms, err = h.controller.VirtualGuests(h.logger, request.PublicVlan, request.PrivateVlan, request.CPU, request.MemoryMb)
+
+	response.Vms, err= h.controller.AllVirtualGuests(h.logger)
 	if err != nil {
 		unExpectedResponse := vm.NewListVMDefault(500)
 		unExpectedResponse.SetPayload(models.ConvertError(err))
@@ -137,4 +136,28 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 	}
 
 	return vm.NewUpdateVMOK()
+}
+
+func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middleware.Responder {
+	var err error
+	h.logger = h.logger.Session("find-vm-by-filter")
+
+	response := &models.VmsResponse{}
+	request := params.Body
+
+	if request == nil {
+		response.Vms, err = h.controller.AllVirtualGuests(h.logger)
+	} else {
+		response.Vms, err = h.controller.VirtualGuests(h.logger, request.PublicVlan, request.PrivateVlan, request.CPU, request.MemoryMb, request.State)
+	}
+	if err != nil {
+		unExpectedResponse := vm.NewFindVmsByFiltersDefault(500)
+		unExpectedResponse.SetPayload(models.ConvertError(err))
+		return unExpectedResponse
+	}
+
+	findVmsByFiltersOK := vm.NewFindVmsByFiltersOK()
+	findVmsByFiltersOK.SetPayload(response)
+
+	return findVmsByFiltersOK
 }

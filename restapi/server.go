@@ -10,13 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jianqiu/vps/db"
 	"github.com/go-openapi/swag"
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
 
-	"github.com/jianqiu/vps/restapi/operations"
+	"github.com/jianqiu/vps/db"
 	"code.cloudfoundry.org/lager"
+	"github.com/jianqiu/vps/restapi/operations"
 )
 
 const (
@@ -41,12 +41,9 @@ func NewServer(api *operations.SoftLayerVMPoolAPI) *Server {
 }
 
 // ConfigureAPI configures the API and handlers. Needs to be called before Serve
-func (s *Server) ConfigureAPI(logger lager.Logger,
-db db.DB,
-migrationsDone <-chan struct{},
-) {
+func (s *Server) ConfigureAPI(logger lager.Logger, db db.DB) {
 	if s.api != nil {
-		s.handler = configureAPI(s.api, logger, db, migrationsDone)
+		s.handler = configureAPI(s.api, logger, db)
 	}
 }
 
@@ -59,9 +56,9 @@ func (s *Server) ConfigureFlags() {
 
 // Server for the soft layer VM pool API
 type Server struct {
-	DBConn string `long:"databaseConnectionString"`
 	DBDriver string `long:"databaseDriver" default:"postgres"`
-	MaxDatabaseConnections int `long:"MaxDatabaseConnections"`
+	DBConn string `long:"databaseConnectionString"`
+	MaxDatabaseConnections int `long:"MaxDatabaseConnections" default:"200"`
 	SqlCACertFile string `long:"sqlCACertFile"`
 
 	LogLevel string `long:"logLevel" default:"debug"`
@@ -116,7 +113,7 @@ func (s *Server) SetAPI(api *operations.SoftLayerVMPoolAPI) {
 
 	s.api = api
 	s.api.Logger = log.Printf
-	s.handler = configureAPI(api,nil,nil,nil)
+	s.handler = configureAPI(api,nil,nil)
 }
 
 func (s *Server) hasScheme(scheme string) bool {
@@ -165,7 +162,7 @@ func (s *Server) Serve() (err error) {
 		httpServer.Handler = s.handler
 
 		wg.Add(1)
-		s.Logf("Serving SoftLayer VM pool at http://%s", s.httpServerL.Addr())
+		s.Logf("Serving soft layer VM pool at http://%s", s.httpServerL.Addr())
 		go func(l net.Listener) {
 			defer wg.Done()
 			if err := httpServer.Serve(l); err != nil {

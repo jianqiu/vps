@@ -37,6 +37,21 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 		values = append(values, filter.PublicVlan)
 	}
 
+	switch filter.State {
+	case models.StateUsing:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "using")
+	case models.StateProvisioning:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "provisioning")
+	case models.StateFree:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "free")
+	default:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "free")
+	}
+
 	rows, err := db.all(logger, db.db, virtualGuests,
 		virtualGuestColumns, LockRow,
 		strings.Join(wheres, " AND "), values...,

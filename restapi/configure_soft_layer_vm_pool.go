@@ -27,7 +27,6 @@ func configureFlags(api *operations.SoftLayerVMPoolAPI) {
 func configureAPI(api *operations.SoftLayerVMPoolAPI,
 logger lager.Logger,
 db db.DB,
-migrationsDone <-chan struct{},
 ) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
@@ -49,11 +48,12 @@ migrationsDone <-chan struct{},
 	api.VMDeleteVMHandler = vm.DeleteVMHandlerFunc(vmHandler.DeleteVM)
 	api.VMGetVMByCidHandler = vm.GetVMByCidHandlerFunc(vmHandler.GetVMByCid)
 	api.VMListVMHandler = vm.ListVMHandlerFunc(vmHandler.ListVM)
+	api.VMUpdateVMWithStateHandler = vm.UpdateVMWithStateHandlerFunc(vmHandler.UpdateVMWithState)
+	api.VMFindVmsByFiltersHandler = vm.FindVmsByFiltersHandlerFunc(vmHandler.FindVmsByFilters)
+
 	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(func(params vm.UpdateVMParams) middleware.Responder {
 		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
 	})
-	api.VMUpdateVMWithStateHandler = vm.UpdateVMWithStateHandlerFunc(vmHandler.UpdateVMWithState)
-
 	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(func(params vm.FindVmsByDeploymentParams) middleware.Responder {
 		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
 	})

@@ -11,11 +11,14 @@ import (
 	"github.com/jianqiu/vps/models"
 )
 
-/*DeleteVMNoContent successful operation
+/*DeleteVMNoContent vm removed successfully
 
 swagger:response deleteVmNoContent
 */
 type DeleteVMNoContent struct {
+
+	// In: body
+	Payload string `json:"body,omitempty"`
 }
 
 // NewDeleteVMNoContent creates DeleteVMNoContent with default headers values
@@ -23,10 +26,25 @@ func NewDeleteVMNoContent() *DeleteVMNoContent {
 	return &DeleteVMNoContent{}
 }
 
+// WithPayload adds the payload to the delete Vm no content response
+func (o *DeleteVMNoContent) WithPayload(payload string) *DeleteVMNoContent {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the delete Vm no content response
+func (o *DeleteVMNoContent) SetPayload(payload string) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *DeleteVMNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(204)
+	if err := producer.Produce(rw, o.Payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*DeleteVMNotFound vm not found

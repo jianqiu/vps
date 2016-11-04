@@ -52,6 +52,8 @@ type SoftLayerVMPoolAPI struct {
 	VMDeleteVMHandler vm.DeleteVMHandler
 	// VMFindVmsByDeploymentHandler sets the operation handler for the find vms by deployment operation
 	VMFindVmsByDeploymentHandler vm.FindVmsByDeploymentHandler
+	// VMFindVmsByFiltersHandler sets the operation handler for the find vms by filters operation
+	VMFindVmsByFiltersHandler vm.FindVmsByFiltersHandler
 	// VMFindVmsByStatesHandler sets the operation handler for the find vms by states operation
 	VMFindVmsByStatesHandler vm.FindVmsByStatesHandler
 	// VMGetVMByCidHandler sets the operation handler for the get Vm by cid operation
@@ -135,6 +137,10 @@ func (o *SoftLayerVMPoolAPI) Validate() error {
 
 	if o.VMFindVmsByDeploymentHandler == nil {
 		unregistered = append(unregistered, "vm.FindVmsByDeploymentHandler")
+	}
+
+	if o.VMFindVmsByFiltersHandler == nil {
+		unregistered = append(unregistered, "vm.FindVmsByFiltersHandler")
 	}
 
 	if o.VMFindVmsByStatesHandler == nil {
@@ -251,6 +257,11 @@ func (o *SoftLayerVMPoolAPI) initHandlerCache() {
 		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/vms/findByDeployment"] = vm.NewFindVmsByDeployment(o.context, o.VMFindVmsByDeploymentHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/vms/findByFilters"] = vm.NewFindVmsByFilters(o.context, o.VMFindVmsByFiltersHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)

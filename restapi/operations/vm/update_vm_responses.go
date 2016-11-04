@@ -11,11 +11,14 @@ import (
 	"github.com/jianqiu/vps/models"
 )
 
-/*UpdateVMOK successful operation
+/*UpdateVMOK update vm in the pool
 
 swagger:response updateVmOK
 */
 type UpdateVMOK struct {
+
+	// In: body
+	Payload string `json:"body,omitempty"`
 }
 
 // NewUpdateVMOK creates UpdateVMOK with default headers values
@@ -23,10 +26,25 @@ func NewUpdateVMOK() *UpdateVMOK {
 	return &UpdateVMOK{}
 }
 
+// WithPayload adds the payload to the update Vm o k response
+func (o *UpdateVMOK) WithPayload(payload string) *UpdateVMOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update Vm o k response
+func (o *UpdateVMOK) SetPayload(payload string) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *UpdateVMOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	if err := producer.Produce(rw, o.Payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*UpdateVMNotFound vm not found

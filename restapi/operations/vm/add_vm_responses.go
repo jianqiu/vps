@@ -11,11 +11,14 @@ import (
 	"github.com/jianqiu/vps/models"
 )
 
-/*AddVMOK successful operation
+/*AddVMOK add a new vm into the pool
 
 swagger:response addVmOK
 */
 type AddVMOK struct {
+
+	// In: body
+	Payload string `json:"body,omitempty"`
 }
 
 // NewAddVMOK creates AddVMOK with default headers values
@@ -23,10 +26,25 @@ func NewAddVMOK() *AddVMOK {
 	return &AddVMOK{}
 }
 
+// WithPayload adds the payload to the add Vm o k response
+func (o *AddVMOK) WithPayload(payload string) *AddVMOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the add Vm o k response
+func (o *AddVMOK) SetPayload(payload string) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *AddVMOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	if err := producer.Produce(rw, o.Payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*AddVMDefault unexpected error

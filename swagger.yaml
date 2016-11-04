@@ -36,7 +36,9 @@ paths:
             $ref: "#/definitions/Vm"
       responses:
         "200":
-          description: successful operation
+          description: add a new vm into the pool
+          schema:
+            type: string
         default:
           description: unexpected error
           schema:
@@ -47,17 +49,8 @@ paths:
       summary: List vms of the pool
       description: ""
       operationId: listVm
-      consumes:
-        - application/json
       produces:
         - application/json
-      parameters:
-        - in: body
-          name: body
-          description: Vm object that needs to be added to the pool
-          required: false
-          schema:
-            $ref: "#/definitions/VmFilter"
       responses:
         "200":
           description: successful operation
@@ -83,14 +76,45 @@ paths:
         - in: body
           name: body
           description: Vm object that needs to be added to the pool
-          required: false
+          required: true
           schema:
             $ref: "#/definitions/Vm"
       responses:
         "404":
           description: vm not found
         "200":
+          description: update vm in the pool
+          schema:
+            type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+  /vms/findByFilters:
+    post:
+      tags:
+        - vm
+      summary: Finds Vms by filters (cpu, memory, private_vlan, public_vlan, state)
+      description: ""
+      operationId: findVmsByFilters
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Vm object that needs to be added to the pool
+          required: false
+          schema:
+            $ref: "#/definitions/VmFilter"
+      responses:
+        "200":
           description: successful operation
+          schema:
+            $ref: "#/definitions/VmsResponse"
+        "404":
+          description: vm not found
         default:
           description: unexpected error
           schema:
@@ -207,7 +231,9 @@ paths:
         "404":
           description: vm not found
         "200":
-          description: successful operation
+          description: state updated successfully
+          schema:
+            type: string
         default:
           description: unexpected error
           schema:
@@ -231,7 +257,9 @@ paths:
         "404":
           description: vm not found
         "204":
-          description: successful operation
+          description: vm removed successfully
+          schema:
+            type: string
         default:
           description: unexpected error
           schema:

@@ -4,6 +4,7 @@ package vm
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -30,6 +31,7 @@ type UpdateVMParams struct {
 	HTTPRequest *http.Request
 
 	/*Vm object that needs to be added to the pool
+	  Required: true
 	  In: body
 	*/
 	Body *models.VM
@@ -45,7 +47,12 @@ func (o *UpdateVMParams) BindRequest(r *http.Request, route *middleware.MatchedR
 		defer r.Body.Close()
 		var body models.VM
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			res = append(res, errors.NewParseError("body", "body", "", err))
+			if err == io.EOF {
+				res = append(res, errors.Required("body", "body"))
+			} else {
+				res = append(res, errors.NewParseError("body", "body", "", err))
+			}
+
 		} else {
 			if err := body.Validate(route.Formats); err != nil {
 				res = append(res, err)
@@ -56,6 +63,8 @@ func (o *UpdateVMParams) BindRequest(r *http.Request, route *middleware.MatchedR
 			}
 		}
 
+	} else {
+		res = append(res, errors.Required("body", "body"))
 	}
 
 	if len(res) > 0 {
