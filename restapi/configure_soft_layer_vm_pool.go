@@ -13,8 +13,6 @@ import (
 	"github.com/jianqiu/vps/restapi/handlers"
 	"github.com/jianqiu/vps/db"
 	"github.com/jianqiu/vps/controllers"
-	"github.com/go-openapi/swag"
-	"github.com/jianqiu/vps/config"
 
 	"code.cloudfoundry.org/lager"
 )
@@ -24,12 +22,6 @@ import (
 //go:generate swagger generate server --target .. --name  --spec ../swagger.json
 
 func configureFlags(api *operations.SoftLayerVMPoolAPI) {
-	api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{
-		swag.CommandLineOptionsGroup {
-			ShortDescription: "additional information",
-			Options: &config.OPTS,
-		},
-	}
 }
 
 func configureAPI(api *operations.SoftLayerVMPoolAPI,

@@ -15,7 +15,6 @@ import (
 
 	"github.com/jianqiu/vps/db"
 	"github.com/jianqiu/vps/db/sqldb"
-	"github.com/jianqiu/vps/config"
 	"github.com/jianqiu/vps/restapi"
 	"github.com/jianqiu/vps/migration"
 	"github.com/jianqiu/vps/restapi/operations"
@@ -64,7 +63,7 @@ func main() {
 		os.Exit(code)
 	}
 
-	logger, _ := vpslager.New("vps", config.OPTS.LogLevel)
+	logger, _ := vpslager.New("vps", server.LogLevel)
 	logger.Info("starting-migration")
 
 	clock := clock.NewClock()
@@ -73,24 +72,24 @@ func main() {
 	var sqlDB *sqldb.SQLDB
 	var sqlConn *sql.DB
 
-	if config.OPTS.DBDriver != "" && config.OPTS.DBConn != "" {
+	if server.DBDriver != "" && server.DBConn != "" {
 		var err error
-		connectionString := appendSSLConnectionStringParam(logger, config.OPTS.DBDriver, config.OPTS.DBConn, config.OPTS.SqlCACertFile)
+		connectionString := appendSSLConnectionStringParam(logger, server.DBDriver, server.DBConn, server.SqlCACertFile)
 
-		sqlConn, err = sql.Open(config.OPTS.DBDriver, connectionString)
+		sqlConn, err = sql.Open(server.DBDriver, connectionString)
 		if err != nil {
 			logger.Fatal("failed-to-open-sql", err)
 		}
 		defer sqlConn.Close()
-		sqlConn.SetMaxOpenConns(config.OPTS.MaxDatabaseConnections)
-		sqlConn.SetMaxIdleConns(config.OPTS.MaxDatabaseConnections)
+		sqlConn.SetMaxOpenConns(0)
+		sqlConn.SetMaxIdleConns(0)
 
 		err = sqlConn.Ping()
 		if err != nil {
 			logger.Fatal("sql-failed-to-connect", err)
 		}
 
-		sqlDB = sqldb.NewSQLDB(sqlConn, clock, config.OPTS.DBDriver)
+		sqlDB = sqldb.NewSQLDB(sqlConn, clock, server.DBDriver)
 		err = sqlDB.CreateConfigurationsTable(logger)
 		if err != nil {
 			logger.Fatal("sql-failed-create-configurations-table", err)
@@ -110,7 +109,7 @@ func main() {
 		sqlConn,
 		migrationsDone,
 		clock,
-		config.OPTS.DBDriver,
+		server.DBDriver,
 	)
 
 	members := grouper.Members{

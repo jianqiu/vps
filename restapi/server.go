@@ -59,6 +59,13 @@ func (s *Server) ConfigureFlags() {
 
 // Server for the soft layer VM pool API
 type Server struct {
+	DBConn string `long:"databaseConnectionString"`
+	DBDriver string `long:"databaseDriver" default:"postgres"`
+	MaxDatabaseConnections int `long:"MaxDatabaseConnections"`
+	SqlCACertFile string `long:"sqlCACertFile"`
+
+	LogLevel string `long:"logLevel" default:"debug"`
+
 	EnabledListeners []string `long:"scheme" description:"the listeners to enable, this can be repeated and defaults to the schemes in the swagger spec"`
 
 	SocketPath    flags.Filename `long:"socket-path" description:"the unix socket to listen on" default:"/var/run/soft-layer-vm-pool.sock"`
