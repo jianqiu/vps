@@ -34,6 +34,9 @@ type VMFilter struct {
 
 	// state
 	State State `json:"state,omitempty"`
+
+	// deployment name
+	DeploymentName string `json:"deploymentName,omitempty"`
 }
 
 // Validate validates this Vm filter

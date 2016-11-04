@@ -40,6 +40,18 @@ func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, 
 	return h.db.VirtualGuests(logger, filter)
 }
 
+func (h *VirtualGuestController) VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error) {
+	logger = logger.Session("vms")
+
+	return h.db.VirtualGuestsByDeployments(logger, names)
+}
+
+func (h *VirtualGuestController) VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error) {
+	logger = logger.Session("vms")
+
+	return h.db.VirtualGuestsByStates(logger, states)
+}
+
 func (h *VirtualGuestController) CreateVM(logger lager.Logger, vmDefinition *models.VM) error {
 	var err error
 	logger = logger.Session("create-vm")

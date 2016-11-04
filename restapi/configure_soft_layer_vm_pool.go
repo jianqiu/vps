@@ -50,15 +50,11 @@ db db.DB,
 	api.VMListVMHandler = vm.ListVMHandlerFunc(vmHandler.ListVM)
 	api.VMUpdateVMWithStateHandler = vm.UpdateVMWithStateHandlerFunc(vmHandler.UpdateVMWithState)
 	api.VMFindVmsByFiltersHandler = vm.FindVmsByFiltersHandlerFunc(vmHandler.FindVmsByFilters)
+	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(vmHandler.FindVmsByDeployment)
+	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(vmHandler.FindVmsByStates)
 
 	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(func(params vm.UpdateVMParams) middleware.Responder {
 		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
-	})
-	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(func(params vm.FindVmsByDeploymentParams) middleware.Responder {
-		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
-	})
-	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(func(params vm.FindVmsByStatesParams) middleware.Responder {
-		return middleware.NotImplemented("operation vm.FindVmsByStates has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

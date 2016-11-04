@@ -10,31 +10,36 @@ import (
 )
 
 func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*models.VM, error) {
-	logger = logger.Session("virtualguests", lager.Data{"filter": filter})
+	logger = logger.Session("vms-by-filter", lager.Data{"filter": filter})
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
 	wheres := []string{}
 	values := []interface{}{}
 
-	if filter.CPU != 0 {
+	if filter.CPU > 0 {
 		wheres = append(wheres, "cpu = ?")
-		values = append(values, filter.Cid)
+		values = append(values, filter.CPU)
 	}
 
-	if filter.MemoryMb != 0 {
+	if filter.MemoryMb > 0 {
 		wheres = append(wheres, "memory_mb = ?")
-		values = append(values, filter.Cid)
+		values = append(values, filter.MemoryMb)
 	}
 
-	if filter.PrivateVlan != 0 {
+	if filter.PrivateVlan >0 {
 		wheres = append(wheres, "private_vlan = ?")
 		values = append(values, filter.PrivateVlan)
 	}
 
-	if filter.PublicVlan != 0 {
+	if filter.PublicVlan > 0 {
 		wheres = append(wheres, "public_vlan = ?")
 		values = append(values, filter.PublicVlan)
+	}
+
+	if filter.DeploymentName != "" {
+		wheres = append(wheres, "deployment_name = ?")
+		values = append(values, filter.DeploymentName)
 	}
 
 	switch filter.State {
@@ -48,8 +53,6 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 		wheres = append(wheres, "state = ?")
 		values = append(values, "free")
 	default:
-		wheres = append(wheres, "state = ?")
-		values = append(values, "free")
 	}
 
 	rows, err := db.all(logger, db.db, virtualGuests,
@@ -81,7 +84,7 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 }
 
 func (db *SQLDB) VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, error) {
-	logger = logger.Session("virtual-by-cid", lager.Data{"cid": cid})
+	logger = logger.Session("vm-by-cid", lager.Data{"cid": cid})
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
@@ -93,7 +96,7 @@ func (db *SQLDB) VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, 
 }
 
 func (db *SQLDB) VirtualGuestByIP(logger lager.Logger, ip string) (*models.VM, error) {
-	logger = logger.Session("virtual-by-ip", lager.Data{"ip": ip})
+	logger = logger.Session("vm-by-ip", lager.Data{"ip": ip})
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
@@ -102,6 +105,98 @@ func (db *SQLDB) VirtualGuestByIP(logger lager.Logger, ip string) (*models.VM, e
 		"ip = ?", ip,
 	)
 	return db.fetchVirtualGuest(logger, row, db.db)
+}
+
+func (db *SQLDB) VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error) {
+	logger = logger.Session("vms-by-deployment", lager.Data{"filter": names})
+	logger.Debug("starting")
+	defer logger.Debug("complete")
+
+	wheres := []string{}
+	values := []interface{}{}
+
+	for _, name := range names {
+		wheres = append(wheres, "deployment_name = ?")
+		values = append(values, name)
+	}
+
+	rows, err := db.all(logger, db.db, virtualGuests,
+		virtualGuestColumns, LockRow,
+		strings.Join(wheres, " OR "), values...,
+	)
+	if err != nil {
+		logger.Error("failed-query", err)
+		return nil, db.convertSQLError(err)
+	}
+	defer rows.Close()
+
+	results := []*models.VM{}
+	for rows.Next() {
+		vm, err := db.fetchVirtualGuest(logger, rows, db.db)
+		if err != nil {
+			logger.Error("failed-fetch", err)
+			return nil, err
+		}
+		results = append(results, vm)
+	}
+
+	if rows.Err() != nil {
+		logger.Error("failed-getting-next-row", rows.Err())
+		return nil, db.convertSQLError(rows.Err())
+	}
+
+	return results, nil
+}
+
+func (db *SQLDB) VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error) {
+	logger = logger.Session("vms-by-state", lager.Data{"filter": states})
+	logger.Debug("starting")
+	defer logger.Debug("complete")
+
+	wheres := []string{}
+	values := []interface{}{}
+
+	for _, state := range states {
+		switch state {
+		case "using":
+			wheres = append(wheres, "state = ?")
+			values = append(values, "using")
+		case "provisioning":
+			wheres = append(wheres, "state = ?")
+			values = append(values, "provisioning")
+		case "free":
+			wheres = append(wheres, "state = ?")
+			values = append(values, "free")
+		default:
+		}
+	}
+
+	rows, err := db.all(logger, db.db, virtualGuests,
+		virtualGuestColumns, LockRow,
+		strings.Join(wheres, " OR "), values...,
+	)
+	if err != nil {
+		logger.Error("failed-query", err)
+		return nil, db.convertSQLError(err)
+	}
+	defer rows.Close()
+
+	results := []*models.VM{}
+	for rows.Next() {
+		vm, err := db.fetchVirtualGuest(logger, rows, db.db)
+		if err != nil {
+			logger.Error("failed-fetch", err)
+			return nil, err
+		}
+		results = append(results, vm)
+	}
+
+	if rows.Err() != nil {
+		logger.Error("failed-getting-next-row", rows.Err())
+		return nil, db.convertSQLError(rows.Err())
+	}
+
+	return results, nil
 }
 
 func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *models.VM) error {

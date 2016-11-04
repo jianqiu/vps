@@ -11,6 +11,8 @@ import (
 type VirtualGuestController interface {
 	AllVirtualGuests(logger lager.Logger) ([]*models.VM, error)
 	VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32, state models.State) ([]*models.VM, error)
+	VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error)
+	VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error)
 	CreateVM(logger lager.Logger, vm *models.VM) error
 	DeleteVM(logger lager.Logger, cid int32) error
 	UpdateVM(logger lager.Logger, cid int32, updateData *models.State) error
@@ -97,7 +99,7 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 
 func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("list-vm")
+	h.logger = h.logger.Session("list-vms")
 
 	response := &models.VmsResponse{}
 
@@ -140,7 +142,7 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 
 func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("find-vm-by-filter")
+	h.logger = h.logger.Session("find-vms-by-filter")
 
 	response := &models.VmsResponse{}
 	request := params.Body
@@ -160,4 +162,44 @@ func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middlewar
 	findVmsByFiltersOK.SetPayload(response)
 
 	return findVmsByFiltersOK
+}
+
+func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) middleware.Responder {
+	var err error
+	h.logger = h.logger.Session("find-vms-by-deployments")
+
+	response := &models.VmsResponse{}
+	request := params.Deployment
+
+	response.Vms, err = h.controller.VirtualGuestsByDeployments(h.logger, request)
+	if err != nil {
+		unExpectedResponse := vm.NewFindVmsByDeploymentDefault(500)
+		unExpectedResponse.SetPayload(models.ConvertError(err))
+		return unExpectedResponse
+	}
+
+	findVmsByDeploymentsOK := vm.NewFindVmsByDeploymentOK()
+	findVmsByDeploymentsOK.SetPayload(response)
+
+	return findVmsByDeploymentsOK
+}
+
+func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams) middleware.Responder {
+	var err error
+	h.logger = h.logger.Session("find-vms-by-state")
+
+	response := &models.VmsResponse{}
+	request := params.States
+
+	response.Vms, err = h.controller.VirtualGuestsByStates(h.logger, request)
+	if err != nil {
+		unExpectedResponse := vm.NewFindVmsByStatesDefault(500)
+		unExpectedResponse.SetPayload(models.ConvertError(err))
+		return unExpectedResponse
+	}
+
+	findVmsByStatesOK := vm.NewFindVmsByStatesOK()
+	findVmsByStatesOK.SetPayload(response)
+
+	return findVmsByStatesOK
 }
