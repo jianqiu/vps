@@ -64,15 +64,27 @@ func (h *VirtualGuestController) CreateVM(logger lager.Logger, vmDefinition *mod
 	return nil
 }
 
+func (h *VirtualGuestController) UpdateVM(logger lager.Logger, vmDefinition *models.VM) error {
+	var err error
+	logger = logger.Session("update-vm")
+
+	h.db.UpdateVirtualGuestInPool(logger, vmDefinition)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (h *VirtualGuestController) DeleteVM(logger lager.Logger, cid int32) error {
 	logger = logger.Session("delete-vm")
 
 	return h.db.DeleteVirtualGuestFromPool(logger, cid)
 }
 
-func (h *VirtualGuestController) UpdateVM(logger lager.Logger, cid int32, updateData *models.State) error {
+func (h *VirtualGuestController) UpdateVMWithState(logger lager.Logger, cid int32, updateData *models.State) error {
 	var err error
-	logger = logger.Session("update-vm")
+	logger = logger.Session("update-vm-with-state")
 
 	switch *updateData {
 	case models.StateUsing:

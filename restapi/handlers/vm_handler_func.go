@@ -15,7 +15,8 @@ type VirtualGuestController interface {
 	VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error)
 	CreateVM(logger lager.Logger, vm *models.VM) error
 	DeleteVM(logger lager.Logger, cid int32) error
-	UpdateVM(logger lager.Logger, cid int32, updateData *models.State) error
+	UpdateVM(logger lager.Logger, vm *models.VM) error
+	UpdateVMWithState(logger lager.Logger, cid int32, updateData *models.State) error
 	VirtualGuestByCid(logger lager.Logger, cid int32) (*models.VM, error)
 }
 
@@ -46,7 +47,22 @@ func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
 		unExpectedResponse.SetPayload(models.ConvertError(err))
 		return unExpectedResponse
 	}
-	return vm.NewAddVMOK()
+	return vm.NewAddVMOK().WithPayload("added successfully")
+}
+
+func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {
+	var err error
+	h.logger = h.logger.Session("update-vm")
+
+	request := params.Body
+
+	err = h.controller.UpdateVM(h.logger, request)
+	if err != nil {
+		unExpectedResponse := vm.NewUpdateVMDefault(500)
+		unExpectedResponse.SetPayload(models.ConvertError(err))
+		return unExpectedResponse
+	}
+	return vm.NewUpdateVMOK().WithPayload("updated successfully")
 }
 
 func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
@@ -91,10 +107,7 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 		return getVMByCidNotFound
 	}
 
-	getVMByCidOK := vm.NewGetVMByCidOK()
-	getVMByCidOK.SetPayload(response)
-
-	return getVMByCidOK
+	return vm.NewGetVMByCidOK().WithPayload(response)
 }
 
 func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
@@ -114,15 +127,12 @@ func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 		return vm.NewListVMNotFound()
 	}
 
-	listVmsOK := vm.NewListVMOK()
-	listVmsOK.SetPayload(response)
-
-	return listVmsOK
+	return vm.NewListVMOK().WithPayload(response)
 }
 
 func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("update-vm")
+	h.logger = h.logger.Session("update-vm-with-state")
 
 	vmId := params.Cid
 	if vmId == 0 {
@@ -130,14 +140,14 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 	}
 
 	updateData := params.Body
-	err = h.controller.UpdateVM(h.logger, vmId, &updateData.State)
+	err = h.controller.UpdateVMWithState(h.logger, vmId, &updateData.State)
 	if err != nil {
 		unExpectedResponse := vm.NewListVMDefault(500)
 		unExpectedResponse.SetPayload(models.ConvertError(err))
 		return unExpectedResponse
 	}
 
-	return vm.NewUpdateVMOK()
+	return vm.NewUpdateVMOK().WithPayload("updated successfully")
 }
 
 func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middleware.Responder {
@@ -158,15 +168,12 @@ func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middlewar
 		return unExpectedResponse
 	}
 
-	findVmsByFiltersOK := vm.NewFindVmsByFiltersOK()
-	findVmsByFiltersOK.SetPayload(response)
-
-	return findVmsByFiltersOK
+	return vm.NewFindVmsByFiltersOK().WithPayload(response)
 }
 
 func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("find-vms-by-deployments")
+	h.logger = h.logger.Session("find-vms-by-deployment")
 
 	response := &models.VmsResponse{}
 	request := params.Deployment
@@ -178,10 +185,7 @@ func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) mid
 		return unExpectedResponse
 	}
 
-	findVmsByDeploymentsOK := vm.NewFindVmsByDeploymentOK()
-	findVmsByDeploymentsOK.SetPayload(response)
-
-	return findVmsByDeploymentsOK
+	return vm.NewFindVmsByDeploymentOK().WithPayload(response)
 }
 
 func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams) middleware.Responder {
@@ -198,8 +202,5 @@ func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams) middleware.
 		return unExpectedResponse
 	}
 
-	findVmsByStatesOK := vm.NewFindVmsByStatesOK()
-	findVmsByStatesOK.SetPayload(response)
-
-	return findVmsByStatesOK
+	return vm.NewFindVmsByStatesOK().WithPayload(response)
 }

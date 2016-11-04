@@ -6,7 +6,6 @@ import (
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/jianqiu/vps/restapi/operations"
 	"github.com/jianqiu/vps/restapi/operations/vm"
@@ -52,10 +51,7 @@ db db.DB,
 	api.VMFindVmsByFiltersHandler = vm.FindVmsByFiltersHandlerFunc(vmHandler.FindVmsByFilters)
 	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(vmHandler.FindVmsByDeployment)
 	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(vmHandler.FindVmsByStates)
-
-	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(func(params vm.UpdateVMParams) middleware.Responder {
-		return middleware.NotImplemented("operation vm.FindVmsByDeployment has not yet been implemented")
-	})
+	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(vmHandler.UpdateVM)
 
 	api.ServerShutdown = func() {}
 

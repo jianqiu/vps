@@ -229,6 +229,45 @@ func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *mod
 	return nil
 }
 
+func (db *SQLDB) UpdateVirtualGuestInPool(logger lager.Logger, virtualGuest *models.VM) error {
+	logger = logger.Session("update-virtual-guest-in-pool", lager.Data{"cid":virtualGuest.Cid})
+
+	err := db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
+		_, err := db.fetchVMForUpdate(logger, virtualGuest.Cid, tx)
+		if err != nil {
+			logger.Error("failed-locking-vm", err)
+			return err
+		}
+
+		logger.Info("starting")
+		defer logger.Info("complete")
+		now := db.clock.Now().UnixNano()
+
+
+		_, err = db.update(logger, tx, virtualGuests,
+			SQLAttributes{
+				"hostname": virtualGuest.Hostname,
+				"ip":  virtualGuest.IP,
+				"cpu":  virtualGuest.CPU,
+				"memory_mb":  virtualGuest.MemoryMb,
+				"deployment_name":  virtualGuest.DeploymentName,
+				"public_vlan":  virtualGuest.PublicVlan,
+				"private_vlan":  virtualGuest.PrivateVlan,
+				"state":    virtualGuest.State,
+				"updated_at": now,
+			},
+			"cid = ?", virtualGuest.Cid,
+		)
+		if err != nil {
+			return db.convertSQLError(err)
+		}
+
+		return nil
+	})
+
+	return err
+}
+
 func (db *SQLDB) ChangeVirtualGuestToProvision(logger lager.Logger, cid int32) error {
 	logger = logger.Session("update-virtual-guest-to-in-use", lager.Data{"cid": cid})
 
