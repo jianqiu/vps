@@ -159,7 +159,7 @@ func appendSSLConnectionStringParam(logger lager.Logger, driverName, databaseCon
 			}
 
 			mysql.RegisterTLSConfig("vps-tls", tlsConfig)
-			databaseConnectionString = fmt.Sprintf("%s?tls=bbs-tls", databaseConnectionString)
+			databaseConnectionString = fmt.Sprintf("%s?tls=vps-tls", databaseConnectionString)
 		}
 	case "postgres":
 		if sqlCACertFile == "" {

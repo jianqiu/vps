@@ -253,7 +253,6 @@ func (db *SQLDB) UpdateVirtualGuestInPool(logger lager.Logger, virtualGuest *mod
 				"deployment_name":  virtualGuest.DeploymentName,
 				"public_vlan":  virtualGuest.PublicVlan,
 				"private_vlan":  virtualGuest.PrivateVlan,
-				"state":    virtualGuest.State,
 				"updated_at": now,
 			},
 			"cid = ?", virtualGuest.Cid,
