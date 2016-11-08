@@ -102,7 +102,7 @@ var _ = Describe("VmHandlerFunc", func() {
 
 		Context("when the controller returns no virtual guest", func() {
 			BeforeEach(func() {
-				controller.VirtualGuestByCidReturns(nil, models.ErrResourceNotFound)
+				controller.VirtualGuestByCidReturns(nil, nil)
 			})
 
 			It("returns a resource not found error", func() {
