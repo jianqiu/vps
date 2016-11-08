@@ -61,13 +61,38 @@ var _ = Describe("VmHandlerFunc", func() {
 			})
 		})
 
+		Context("when the controller returns no virtual guest", func() {
+			var vms []*models.VM
 
+			BeforeEach(func() {
+				vms = []*models.VM{}
+				controller.AllVirtualGuestsReturns(vms, nil)
+			})
+
+			It("returns 404 status code", func() {
+				listVmNotFound, ok:=responseResponder.(*vm.ListVMNotFound)
+				Expect(ok).To(BeTrue())
+				Expect(listVmNotFound.GetStatusCode()).To(Equal(404))
+			})
+		})
+
+		Context("when the controller errors out", func() {
+			BeforeEach(func() {
+				controller.AllVirtualGuestsReturns(nil, models.ErrUnknownError)
+			})
+
+			It("provides relevant error information", func() {
+				listVmDefault, ok:=responseResponder.(*vm.ListVMDefault)
+				Expect(ok).To(BeTrue())
+				Expect(listVmDefault.GetStatusCode()).To(Equal(500))
+				Expect(listVmDefault.GetPayload()).To(Equal(models.ErrUnknownError))
+			})
+		})
 	})
 
 	Describe("GetVMByCid", func() {
 		var (
 			params vm.GetVMByCidParams
-
 		)
 
 		BeforeEach(func() {
@@ -105,7 +130,7 @@ var _ = Describe("VmHandlerFunc", func() {
 				controller.VirtualGuestByCidReturns(nil, nil)
 			})
 
-			It("returns a resource not found error", func() {
+			It("returns 404 status code", func() {
 				getVmByCidNotFound, ok:=responseResponder.(*vm.GetVMByCidNotFound)
 				Expect(ok).To(BeTrue())
 				Expect(getVmByCidNotFound.GetStatusCode()).To(Equal(404))

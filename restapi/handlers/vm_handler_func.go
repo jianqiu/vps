@@ -112,7 +112,7 @@ func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 	response := &models.VmsResponse{}
 
 
-	response.Vms, err= h.controller.AllVirtualGuests(h.logger)
+	response.Vms, err = h.controller.AllVirtualGuests(h.logger)
 	if err != nil {
 		unExpectedResponse := vm.NewListVMDefault(500)
 		unExpectedResponse.SetPayload(models.ConvertError(err))
