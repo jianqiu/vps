@@ -16,6 +16,6 @@ func (o *UpdateVMDefault) GetStatusCode() int {
 	return o._statusCode
 }
 
-func (o *UpdateVMDefault) GetPayload(payload *models.Error) {
+func (o *UpdateVMDefault) GetPayload() *models.Error {
 	return o.Payload
 }

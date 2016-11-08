@@ -150,4 +150,49 @@ var _ = Describe("VmHandlerFunc", func() {
 			})
 		})
 	})
+
+	Describe("DeleteVM", func() {
+		Context("when the delete request is normal", func() {
+			var (
+				params vm.DeleteVMParams
+			)
+
+			BeforeEach(func() {
+				params = vm.NewDeleteVMParams()
+				params.Cid = 1234567
+			})
+
+			JustBeforeEach(func() {
+				responseResponder = handler.DeleteVM(params)
+			})
+
+			Context("when deleting the virtual guest succeeds", func() {
+				It("returns no error", func() {
+					Expect(controller.DeleteVMCallCount()).To(Equal(1))
+					_, cid := controller.DeleteVMArgsForCall(0)
+					Expect(cid).To(Equal(params.Cid))
+
+					deleteVmNoContent, ok:=responseResponder.(*vm.DeleteVMNoContent)
+					Expect(ok).To(BeTrue())
+					Expect(deleteVmNoContent.GetPayload()).To(Equal("vm removed"))
+				})
+			})
+
+			Context("when the controller returns an error", func() {
+				BeforeEach(func() {
+					controller.DeleteVMReturns(models.ErrUnknownError)
+				})
+
+				It("provides relevant error information", func() {
+					deleteVmDefault, ok:=responseResponder.(*vm.DeleteVMDefault)
+					Expect(ok).To(BeTrue())
+					Expect(deleteVmDefault.GetStatusCode()).To(Equal(500))
+					Expect(deleteVmDefault.GetPayload()).To(Equal(models.ErrUnknownError))
+				})
+			})
+
+
+		})
+
+	})
 })

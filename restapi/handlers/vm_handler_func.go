@@ -69,19 +69,14 @@ func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
 	var err error
 	h.logger = h.logger.Session("delete-vm")
 
-	vmId := params.Cid
-	if vmId == 0 {
-		return vm.NewGetVMByCidNotFound()
-	}
-
-	err = h.controller.DeleteVM(h.logger, vmId)
+	err = h.controller.DeleteVM(h.logger, params.Cid)
 	if err != nil {
 		unExpectedResponse := vm.NewDeleteVMDefault(500)
 		unExpectedResponse.SetPayload(models.ConvertError(err))
 		return unExpectedResponse
 	}
 
-	return vm.NewDeleteVMNoContent()
+	return vm.NewDeleteVMNoContent().WithPayload("vm removed")
 }
 
 
