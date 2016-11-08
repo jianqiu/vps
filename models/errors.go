@@ -74,21 +74,6 @@ var (
 		Type:    ErrorTypeUnknownError,
 		Message: "the request failed for an unknown reason",
 	}
-
-	ErrDeserialize = &Error{
-		Type:    ErrorTypeDeserialize,
-		Message: "could not deserialize record",
-	}
-
-	ErrFailedToOpenEnvelope = &Error{
-		Type:    ErrorTypeFailedToOpenEnvelope,
-		Message: "could not open envelope",
-	}
-
-	ErrGUIDGeneration = &Error{
-		Type:    ErrorTypeGUIDGeneration,
-		Message: "cannot generate random guid",
-	}
 )
 
 type ErrInvalidField struct {

@@ -91,11 +91,6 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 
 	response := &models.VMResponse{}
 
-	vmId := params.Cid
-	if vmId == 0 {
-		return vm.NewGetVMByCidNotFound()
-	}
-
 	response.VM, err = h.controller.VirtualGuestByCid(h.logger,params.Cid)
 	if err != nil {
 		unExpectedResponse := vm.NewGetVMByCidDefault(500)
