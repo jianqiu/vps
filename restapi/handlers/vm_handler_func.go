@@ -7,7 +7,7 @@ import (
 
 	"code.cloudfoundry.org/lager"
 )
-
+//go:generate counterfeiter -o fake_controllers/fake_virtualguest_controller.go . VirtualGuestController
 type VirtualGuestController interface {
 	AllVirtualGuests(logger lager.Logger) ([]*models.VM, error)
 	VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32, state models.State) ([]*models.VM, error)
