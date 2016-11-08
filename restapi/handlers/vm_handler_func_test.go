@@ -190,9 +190,56 @@ var _ = Describe("VmHandlerFunc", func() {
 					Expect(deleteVmDefault.GetPayload()).To(Equal(models.ErrUnknownError))
 				})
 			})
+		})
+	})
 
+	Describe("AddVM", func() {
+		var (
+			vm1  *models.VM
+			params vm.AddVMParams
+		)
 
+		BeforeEach(func() {
+			vm1 = &models.VM {
+				Cid: 1234567,
+				CPU: 4,
+				MemoryMb: 1024,
+				IP: "10.0.0.1",
+				Hostname: "fake.test.com",
+				PrivateVlan: 1234567,
+				PublicVlan: 1234568,
+			}
+			params = vm.NewAddVMParams()
+			params.Body = vm1
 		})
 
+		JustBeforeEach(func() {
+			responseResponder = handler.AddVM(params)
+		})
+
+		Context("when the virtual guest is added successful", func() {
+			It("added into pool", func() {
+				Expect(controller.CreateVMCallCount()).To(Equal(1))
+				_, actualVm := controller.CreateVMArgsForCall(0)
+				Expect(actualVm).To(Equal(vm1))
+
+				addVmOk, ok:=responseResponder.(*vm.AddVMOK)
+				Expect(ok).To(BeTrue())
+				Expect(addVmOk.GetPayload()).To(Equal("added successfully"))
+			})
+		})
+
+		Context("when adding virtual guest fails", func() {
+			BeforeEach(func() {
+				controller.CreateVMReturns(models.ErrUnknownError)
+			})
+
+			It("responds with an error", func() {
+				addVmDefault, ok:=responseResponder.(*vm.AddVMDefault)
+				Expect(ok).To(BeTrue())
+				Expect(addVmDefault.GetStatusCode()).To(Equal(500))
+				Expect(addVmDefault.GetPayload()).To(Equal(models.ErrUnknownError))
+			})
+		})
 	})
 })
