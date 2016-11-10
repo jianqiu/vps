@@ -41,13 +41,13 @@ func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, 
 }
 
 func (h *VirtualGuestController) VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error) {
-	logger = logger.Session("vms")
+	logger = logger.Session("vms-by-deployments")
 
 	return h.db.VirtualGuestsByDeployments(logger, names)
 }
 
 func (h *VirtualGuestController) VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error) {
-	logger = logger.Session("vms")
+	logger = logger.Session("vms-by-states")
 
 	return h.db.VirtualGuestsByStates(logger, states)
 }
@@ -65,15 +65,8 @@ func (h *VirtualGuestController) CreateVM(logger lager.Logger, vmDefinition *mod
 }
 
 func (h *VirtualGuestController) UpdateVM(logger lager.Logger, vmDefinition *models.VM) error {
-	var err error
 	logger = logger.Session("update-vm")
-
-	h.db.UpdateVirtualGuestInPool(logger, vmDefinition)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return h.db.UpdateVirtualGuestInPool(logger, vmDefinition)
 }
 
 func (h *VirtualGuestController) DeleteVM(logger lager.Logger, cid int32) error {
