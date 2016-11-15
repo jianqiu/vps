@@ -56,7 +56,7 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 	}
 
 	rows, err := db.all(logger, db.db, virtualGuests,
-		virtualGuestColumns, LockRow,
+		virtualGuestColumns, NoLockRow,
 		strings.Join(wheres, " AND "), values...,
 	)
 	if err != nil {
@@ -81,6 +81,46 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 	}
 
 	return results, nil
+}
+
+func (db *SQLDB) OrderVirtualGuestToProvision(logger lager.Logger, filter models.VMFilter) (*models.VM, error) {
+	logger = logger.Session("order-free-vmr", lager.Data{"filter": filter})
+	logger.Debug("starting")
+	defer logger.Debug("complete")
+
+	var vm *models.VM
+	var err error
+
+	err = db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
+		vm, err = db.fetchOneVMWithFilter(logger, filter, tx)
+		if err != nil {
+			logger.Error("failed-locking-vm", err)
+			return err
+		}
+
+		if err = vm.ValidateTransitionTo(models.StateProvisioning); err != nil {
+			logger.Error("failed-to-transition-vm-to-provisioning", err)
+			return err
+		}
+
+		logger.Info("starting")
+		defer logger.Info("complete")
+		now := db.clock.Now().UnixNano()
+		_, err = db.update(logger, tx, virtualGuests,
+			SQLAttributes{
+				"state":      "provisioning",
+				"updated_at": now,
+			},
+			"cid = ?", vm.Cid,
+		)
+		if err != nil {
+			return db.convertSQLError(err)
+		}
+
+		return nil
+	})
+
+	return vm, err
 }
 
 func (db *SQLDB) VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, error) {
@@ -256,7 +296,6 @@ func (db *SQLDB) UpdateVirtualGuestInPool(logger lager.Logger, virtualGuest *mod
 		defer logger.Info("complete")
 		now := db.clock.Now().UnixNano()
 
-
 		_, err = db.update(logger, tx, virtualGuests,
 			SQLAttributes{
 				"hostname": virtualGuest.Hostname,
@@ -417,6 +456,55 @@ func (db *SQLDB) fetchVMForUpdate(logger lager.Logger, cid int32, tx *sql.Tx) (*
 	row := db.one(logger, tx, virtualGuests,
 		virtualGuestColumns, LockRow,
 		"cid = ?", cid,
+	)
+	return db.fetchVirtualGuest(logger, row, tx)
+}
+
+func (db *SQLDB) fetchOneVMWithFilter(logger lager.Logger, filter models.VMFilter, tx *sql.Tx) (*models.VM, error) {
+	wheres := []string{}
+	values := []interface{}{}
+
+	if filter.CPU > 0 {
+		wheres = append(wheres, "cpu = ?")
+		values = append(values, filter.CPU)
+	}
+
+	if filter.MemoryMb > 0 {
+		wheres = append(wheres, "memory_mb = ?")
+		values = append(values, filter.MemoryMb)
+	}
+
+	if filter.PrivateVlan >0 {
+		wheres = append(wheres, "private_vlan = ?")
+		values = append(values, filter.PrivateVlan)
+	}
+
+	if filter.PublicVlan > 0 {
+		wheres = append(wheres, "public_vlan = ?")
+		values = append(values, filter.PublicVlan)
+	}
+
+	if filter.DeploymentName != "" {
+		wheres = append(wheres, "deployment_name = ?")
+		values = append(values, filter.DeploymentName)
+	}
+
+	switch filter.State {
+	case models.StateUsing:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "using")
+	case models.StateProvisioning:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "provisioning")
+	case models.StateFree:
+		wheres = append(wheres, "state = ?")
+		values = append(values, "free")
+	default:
+	}
+
+	row := db.one(logger, db.db, virtualGuests,
+		virtualGuestColumns, LockRow,
+		strings.Join(wheres, " AND "), values...,
 	)
 	return db.fetchVirtualGuest(logger, row, tx)
 }

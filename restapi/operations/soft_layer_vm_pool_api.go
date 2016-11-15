@@ -60,6 +60,8 @@ type SoftLayerVMPoolAPI struct {
 	VMGetVMByCidHandler vm.GetVMByCidHandler
 	// VMListVMHandler sets the operation handler for the list Vm operation
 	VMListVMHandler vm.ListVMHandler
+	// VMOrderVMByFilterHandler sets the operation handler for the order Vm by filter operation
+	VMOrderVMByFilterHandler vm.OrderVMByFilterHandler
 	// VMUpdateVMHandler sets the operation handler for the update Vm operation
 	VMUpdateVMHandler vm.UpdateVMHandler
 	// VMUpdateVMWithStateHandler sets the operation handler for the update Vm with state operation
@@ -153,6 +155,10 @@ func (o *SoftLayerVMPoolAPI) Validate() error {
 
 	if o.VMListVMHandler == nil {
 		unregistered = append(unregistered, "vm.ListVMHandler")
+	}
+
+	if o.VMOrderVMByFilterHandler == nil {
+		unregistered = append(unregistered, "vm.OrderVMByFilterHandler")
 	}
 
 	if o.VMUpdateVMHandler == nil {
@@ -277,6 +283,11 @@ func (o *SoftLayerVMPoolAPI) initHandlerCache() {
 		o.handlers[strings.ToUpper("GET")] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/vms"] = vm.NewListVM(o.context, o.VMListVMHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers[strings.ToUpper("POST")] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/vms/order"] = vm.NewOrderVMByFilter(o.context, o.VMOrderVMByFilterHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers[strings.ToUpper("PUT")] = make(map[string]http.Handler)

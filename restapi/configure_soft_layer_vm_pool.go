@@ -52,6 +52,7 @@ db db.DB,
 	api.VMFindVmsByDeploymentHandler = vm.FindVmsByDeploymentHandlerFunc(vmHandler.FindVmsByDeployment)
 	api.VMFindVmsByStatesHandler = vm.FindVmsByStatesHandlerFunc(vmHandler.FindVmsByStates)
 	api.VMUpdateVMHandler = vm.UpdateVMHandlerFunc(vmHandler.UpdateVM)
+	api.VMOrderVMByFilterHandler = vm.OrderVMByFilterHandlerFunc(vmHandler.OrderVmByFilter)
 
 	api.ServerShutdown = func() {}
 

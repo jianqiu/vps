@@ -11,6 +11,7 @@ import (
 type VirtualGuestController interface {
 	AllVirtualGuests(logger lager.Logger) ([]*models.VM, error)
 	VirtualGuests(logger lager.Logger, publicVlan, privateVlan, cpu, memory_mb int32, state models.State) ([]*models.VM, error)
+	OrderVirtualGuest(logger lager.Logger, vmFilter *models.VMFilter) (*models.VM, error)
 	VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error)
 	VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error)
 	CreateVM(logger lager.Logger, vm *models.VM) error
@@ -48,6 +49,23 @@ func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
 		return unExpectedResponse
 	}
 	return vm.NewAddVMOK().WithPayload("added successfully")
+}
+
+func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.Responder {
+	var err error
+	h.logger = h.logger.Session("order-vm-by-filter")
+
+	response := &models.VMResponse{}
+	request := params.Body
+
+	response.VM, err = h.controller.OrderVirtualGuest(h.logger, request)
+	if err != nil {
+		unExpectedResponse := vm.NewOrderVMByFilterDefault(500)
+		unExpectedResponse.SetPayload(models.ConvertError(err))
+		return unExpectedResponse
+	}
+
+	return vm.NewOrderVMByFilterOK().WithPayload(response)
 }
 
 func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {

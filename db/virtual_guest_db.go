@@ -8,6 +8,7 @@ import (
 //go:generate counterfeiter . VirtualGuestDB
 type VirtualGuestDB interface {
 	VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*models.VM, error)
+	OrderVirtualGuestToProvision(logger lager.Logger, filter models.VMFilter) (*models.VM, error)
 	VirtualGuestsByStates(logger lager.Logger, states []string) ([]*models.VM, error)
 	VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error)
 	VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, error)

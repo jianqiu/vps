@@ -40,6 +40,11 @@ func (h *VirtualGuestController) VirtualGuests(logger lager.Logger, publicVlan, 
 	return h.db.VirtualGuests(logger, filter)
 }
 
+func (h *VirtualGuestController) OrderVirtualGuest(logger lager.Logger, vmFilter *models.VMFilter) (*models.VM, error){
+	logger = logger.Session("order-vm")
+	return h.db.OrderVirtualGuestToProvision(logger, *vmFilter)
+}
+
 func (h *VirtualGuestController) VirtualGuestsByDeployments(logger lager.Logger, names []string) ([]*models.VM, error) {
 	logger = logger.Session("vms-by-deployments")
 

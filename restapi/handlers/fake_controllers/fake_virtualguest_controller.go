@@ -33,6 +33,16 @@ type FakeVirtualGuestController struct {
 		result1 []*models.VM
 		result2 error
 	}
+	OrderVirtualGuestStub        func(logger lager.Logger, vmFilter *models.VMFilter) (*models.VM, error)
+	orderVirtualGuestMutex       sync.RWMutex
+	orderVirtualGuestArgsForCall []struct {
+		logger   lager.Logger
+		vmFilter *models.VMFilter
+	}
+	orderVirtualGuestReturns struct {
+		result1 *models.VM
+		result2 error
+	}
 	VirtualGuestsByDeploymentsStub        func(logger lager.Logger, names []string) ([]*models.VM, error)
 	virtualGuestsByDeploymentsMutex       sync.RWMutex
 	virtualGuestsByDeploymentsArgsForCall []struct {
@@ -173,6 +183,41 @@ func (fake *FakeVirtualGuestController) VirtualGuestsReturns(result1 []*models.V
 	fake.VirtualGuestsStub = nil
 	fake.virtualGuestsReturns = struct {
 		result1 []*models.VM
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeVirtualGuestController) OrderVirtualGuest(logger lager.Logger, vmFilter *models.VMFilter) (*models.VM, error) {
+	fake.orderVirtualGuestMutex.Lock()
+	fake.orderVirtualGuestArgsForCall = append(fake.orderVirtualGuestArgsForCall, struct {
+		logger   lager.Logger
+		vmFilter *models.VMFilter
+	}{logger, vmFilter})
+	fake.recordInvocation("OrderVirtualGuest", []interface{}{logger, vmFilter})
+	fake.orderVirtualGuestMutex.Unlock()
+	if fake.OrderVirtualGuestStub != nil {
+		return fake.OrderVirtualGuestStub(logger, vmFilter)
+	} else {
+		return fake.orderVirtualGuestReturns.result1, fake.orderVirtualGuestReturns.result2
+	}
+}
+
+func (fake *FakeVirtualGuestController) OrderVirtualGuestCallCount() int {
+	fake.orderVirtualGuestMutex.RLock()
+	defer fake.orderVirtualGuestMutex.RUnlock()
+	return len(fake.orderVirtualGuestArgsForCall)
+}
+
+func (fake *FakeVirtualGuestController) OrderVirtualGuestArgsForCall(i int) (lager.Logger, *models.VMFilter) {
+	fake.orderVirtualGuestMutex.RLock()
+	defer fake.orderVirtualGuestMutex.RUnlock()
+	return fake.orderVirtualGuestArgsForCall[i].logger, fake.orderVirtualGuestArgsForCall[i].vmFilter
+}
+
+func (fake *FakeVirtualGuestController) OrderVirtualGuestReturns(result1 *models.VM, result2 error) {
+	fake.OrderVirtualGuestStub = nil
+	fake.orderVirtualGuestReturns = struct {
+		result1 *models.VM
 		result2 error
 	}{result1, result2}
 }
@@ -436,6 +481,8 @@ func (fake *FakeVirtualGuestController) Invocations() map[string][][]interface{}
 	defer fake.allVirtualGuestsMutex.RUnlock()
 	fake.virtualGuestsMutex.RLock()
 	defer fake.virtualGuestsMutex.RUnlock()
+	fake.orderVirtualGuestMutex.RLock()
+	defer fake.orderVirtualGuestMutex.RUnlock()
 	fake.virtualGuestsByDeploymentsMutex.RLock()
 	defer fake.virtualGuestsByDeploymentsMutex.RUnlock()
 	fake.virtualGuestsByStatesMutex.RLock()

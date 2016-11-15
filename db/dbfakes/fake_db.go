@@ -20,6 +20,16 @@ type FakeDB struct {
 		result1 []*models.VM
 		result2 error
 	}
+	OrderVirtualGuestToProvisionStub        func(logger lager.Logger, filter models.VMFilter) (*models.VM, error)
+	orderVirtualGuestToProvisionMutex       sync.RWMutex
+	orderVirtualGuestToProvisionArgsForCall []struct {
+		logger lager.Logger
+		filter models.VMFilter
+	}
+	orderVirtualGuestToProvisionReturns struct {
+		result1 *models.VM
+		result2 error
+	}
 	VirtualGuestsByStatesStub        func(logger lager.Logger, states []string) ([]*models.VM, error)
 	virtualGuestsByStatesMutex       sync.RWMutex
 	virtualGuestsByStatesArgsForCall []struct {
@@ -149,6 +159,41 @@ func (fake *FakeDB) VirtualGuestsReturns(result1 []*models.VM, result2 error) {
 	fake.VirtualGuestsStub = nil
 	fake.virtualGuestsReturns = struct {
 		result1 []*models.VM
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeDB) OrderVirtualGuestToProvision(logger lager.Logger, filter models.VMFilter) (*models.VM, error) {
+	fake.orderVirtualGuestToProvisionMutex.Lock()
+	fake.orderVirtualGuestToProvisionArgsForCall = append(fake.orderVirtualGuestToProvisionArgsForCall, struct {
+		logger lager.Logger
+		filter models.VMFilter
+	}{logger, filter})
+	fake.recordInvocation("OrderVirtualGuestToProvision", []interface{}{logger, filter})
+	fake.orderVirtualGuestToProvisionMutex.Unlock()
+	if fake.OrderVirtualGuestToProvisionStub != nil {
+		return fake.OrderVirtualGuestToProvisionStub(logger, filter)
+	} else {
+		return fake.orderVirtualGuestToProvisionReturns.result1, fake.orderVirtualGuestToProvisionReturns.result2
+	}
+}
+
+func (fake *FakeDB) OrderVirtualGuestToProvisionCallCount() int {
+	fake.orderVirtualGuestToProvisionMutex.RLock()
+	defer fake.orderVirtualGuestToProvisionMutex.RUnlock()
+	return len(fake.orderVirtualGuestToProvisionArgsForCall)
+}
+
+func (fake *FakeDB) OrderVirtualGuestToProvisionArgsForCall(i int) (lager.Logger, models.VMFilter) {
+	fake.orderVirtualGuestToProvisionMutex.RLock()
+	defer fake.orderVirtualGuestToProvisionMutex.RUnlock()
+	return fake.orderVirtualGuestToProvisionArgsForCall[i].logger, fake.orderVirtualGuestToProvisionArgsForCall[i].filter
+}
+
+func (fake *FakeDB) OrderVirtualGuestToProvisionReturns(result1 *models.VM, result2 error) {
+	fake.OrderVirtualGuestToProvisionStub = nil
+	fake.orderVirtualGuestToProvisionReturns = struct {
+		result1 *models.VM
 		result2 error
 	}{result1, result2}
 }
@@ -512,6 +557,8 @@ func (fake *FakeDB) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.virtualGuestsMutex.RLock()
 	defer fake.virtualGuestsMutex.RUnlock()
+	fake.orderVirtualGuestToProvisionMutex.RLock()
+	defer fake.orderVirtualGuestToProvisionMutex.RUnlock()
 	fake.virtualGuestsByStatesMutex.RLock()
 	defer fake.virtualGuestsByStatesMutex.RUnlock()
 	fake.virtualGuestsByDeploymentsMutex.RLock()
