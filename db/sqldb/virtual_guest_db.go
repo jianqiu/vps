@@ -218,7 +218,7 @@ func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *mod
 			"created_at":         now,
 			"updated_at":         now,
 			"deployment_name":    virtualGuest.DeploymentName,
-			"state":              "free",
+			"state":              virtualGuest.State,
 		},
 	)
 	if err != nil {
