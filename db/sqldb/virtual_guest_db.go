@@ -206,6 +206,19 @@ func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *mod
 
 	now := db.clock.Now().UnixNano()
 
+	var stateString string
+
+	switch virtualGuest.State {
+	case models.StateUsing:
+		stateString = "using"
+	case models.StateProvisioning:
+		stateString = "provisioning"
+	case models.StateFree:
+		stateString = "free"
+	default:
+		stateString = "unknown"
+	}
+
 	_, err := db.insert(logger, db.db, virtualGuests,
 		SQLAttributes{
 			"cid":               virtualGuest.Cid,
@@ -218,7 +231,7 @@ func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *mod
 			"created_at":         now,
 			"updated_at":         now,
 			"deployment_name":    virtualGuest.DeploymentName,
-			"state":              virtualGuest.State,
+			"state":              stateString,
 		},
 	)
 	if err != nil {
