@@ -200,7 +200,7 @@ func (db *SQLDB) VirtualGuestsByStates(logger lager.Logger, states []string) ([]
 }
 
 func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *models.VM) error {
-	logger = logger.Session("insert-virtual-guest-to-pool", lager.Data{"cid": virtualGuest.Cid})
+	logger = logger.Session("insert-vm-to-pool", lager.Data{"cid": virtualGuest.Cid})
 	logger.Info("starting")
 	defer logger.Info("complete")
 
@@ -230,7 +230,7 @@ func (db *SQLDB) InsertVirtualGuestToPool(logger lager.Logger, virtualGuest *mod
 }
 
 func (db *SQLDB) UpdateVirtualGuestInPool(logger lager.Logger, virtualGuest *models.VM) error {
-	logger = logger.Session("update-virtual-guest-in-pool", lager.Data{"cid":virtualGuest.Cid})
+	logger = logger.Session("update-vm-in-pool", lager.Data{"cid":virtualGuest.Cid})
 
 	err := db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
 		_, err := db.fetchVMForUpdate(logger, virtualGuest.Cid, tx)
@@ -268,7 +268,7 @@ func (db *SQLDB) UpdateVirtualGuestInPool(logger lager.Logger, virtualGuest *mod
 }
 
 func (db *SQLDB) ChangeVirtualGuestToProvision(logger lager.Logger, cid int32) error {
-	logger = logger.Session("update-virtual-guest-to-in-use", lager.Data{"cid": cid})
+	logger = logger.Session("update-vm-to-provisioning", lager.Data{"cid": cid})
 
 	err := db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
 		vm, err := db.fetchVMForUpdate(logger, cid, tx)
@@ -338,7 +338,7 @@ func (db *SQLDB) ChangeVirtualGuestToUse(logger lager.Logger, cid int32) error {
 }
 
 func (db *SQLDB) ChangeVirtualGuestToFree(logger lager.Logger, cid int32) error {
-	logger = logger.Session("update-virtual-guest-to-deleted", lager.Data{"cid": cid})
+	logger = logger.Session("update-vm-to-free", lager.Data{"cid": cid})
 
 	err := db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
 		vm, err := db.fetchVMForUpdate(logger, cid, tx)
@@ -373,7 +373,7 @@ func (db *SQLDB) ChangeVirtualGuestToFree(logger lager.Logger, cid int32) error 
 }
 
 func (db *SQLDB) DeleteVirtualGuestFromPool(logger lager.Logger, cid int32) error {
-	logger = logger.Session("delete-virtual-guest-from-pool", lager.Data{"cid": cid})
+	logger = logger.Session("delete-vm-from-pool", lager.Data{"cid": cid})
 	logger.Info("starting")
 	defer logger.Info("complete")
 
