@@ -84,7 +84,7 @@ func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*
 }
 
 func (db *SQLDB) OrderVirtualGuestToProvision(logger lager.Logger, filter models.VMFilter) (*models.VM, error) {
-	logger = logger.Session("order-free-vmr", lager.Data{"filter": filter})
+	logger = logger.Session("order-free-vm", lager.Data{"filter": filter})
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 

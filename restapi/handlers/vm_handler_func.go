@@ -60,9 +60,13 @@ func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.
 
 	response.VM, err = h.controller.OrderVirtualGuest(h.logger, request)
 	if err != nil {
-		unExpectedResponse := vm.NewOrderVMByFilterDefault(500)
-		unExpectedResponse.SetPayload(models.ConvertError(err))
-		return unExpectedResponse
+		if models.ConvertError(err).Equal(models.ErrResourceNotFound){
+			return vm.NewOrderVMByFilterNotFound()
+		} else {
+			unExpectedResponse := vm.NewOrderVMByFilterDefault(500)
+			unExpectedResponse.SetPayload(models.ConvertError(err))
+			return unExpectedResponse
+		}
 	}
 
 	return vm.NewOrderVMByFilterOK().WithPayload(response)
