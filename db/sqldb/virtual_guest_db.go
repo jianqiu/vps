@@ -93,12 +93,6 @@ func (db *SQLDB) OrderVirtualGuestToProvision(logger lager.Logger, filter models
 	var err error
 
 	err = db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
-		_, err := db.db.Exec(fmt.Sprintf("LOCK TABLE %s", virtualGuests))
-		if err != nil {
-			logger.Error("lock table error", err)
-			return err
-		}
-
 		vm, err = db.fetchOneVMWithFilter(logger, filter, tx)
 		if err != nil {
 			logger.Error("failed-locking-vm", err)
@@ -509,7 +503,7 @@ func (db *SQLDB) fetchOneVMWithFilter(logger lager.Logger, filter models.VMFilte
 	default:
 	}
 
-	row := db.one(logger, db.db, virtualGuests,
+	row := db.one(logger, tx, virtualGuests,
 		virtualGuestColumns, LockRow,
 		strings.Join(wheres, " AND "), values...,
 	)
