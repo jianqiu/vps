@@ -11,6 +11,7 @@ const StackTraceBufferSize = 1024 * 100
 
 type Logger interface {
 	RegisterSink(Sink)
+	ReSession(task string, data ...Data) Logger
 	Session(task string, data ...Data) Logger
 	SessionName() string
 	Debug(action string, data ...Data)
@@ -44,6 +45,22 @@ func (l *logger) RegisterSink(sink Sink) {
 
 func (l *logger) SessionName() string {
 	return l.task
+}
+
+func (l *logger) ReSession(task string, data ...Data) Logger {
+	sid := atomic.AddUint32(&l.nextSession, 1)
+
+	var sessionIDstr string
+
+	sessionIDstr = fmt.Sprintf("%d", sid)
+
+	return &logger{
+		component: l.component,
+		task:      fmt.Sprintf("%s", task),
+		sinks:     l.sinks,
+		sessionID: sessionIDstr,
+		data:      l.baseData(data...),
+	}
 }
 
 func (l *logger) Session(task string, data ...Data) Logger {

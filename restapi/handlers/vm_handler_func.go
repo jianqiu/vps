@@ -38,7 +38,7 @@ type VMHandler struct {
 
 func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("add-vm")
+	h.logger = h.logger.ReSession("add-vm")
 
 	request := params.Body
 
@@ -53,7 +53,7 @@ func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
 
 func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("order-vm-by-filter")
+	h.logger = h.logger.ReSession("order-vm-by-filter")
 
 	response := &models.VMResponse{}
 	request := params.Body
@@ -74,7 +74,7 @@ func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.
 
 func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("update-vm")
+	h.logger = h.logger.ReSession("update-vm")
 
 	request := params.Body
 
@@ -89,7 +89,7 @@ func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {
 
 func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("delete-vm")
+	h.logger = h.logger.ReSession("delete-vm")
 
 	err = h.controller.DeleteVM(h.logger, params.Cid)
 	if err != nil {
@@ -108,7 +108,7 @@ func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
 
 func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("get-vm-by-cid")
+	h.logger = h.logger.ReSession("get-vm-by-cid")
 
 	response := &models.VMResponse{}
 
@@ -128,10 +128,9 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 
 func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("list-vms")
+	h.logger =  h.logger.ReSession("list-vms")
 
 	response := &models.VmsResponse{}
-
 
 	response.Vms, err = h.controller.AllVirtualGuests(h.logger)
 	if err != nil {
@@ -148,7 +147,7 @@ func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 
 func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("update-vm-with-state")
+	h.logger = h.logger.ReSession("update-vm-with-state")
 
 	vmId := params.Cid
 	updateData := params.Body
@@ -168,7 +167,7 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 
 func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("find-vms-by-filter")
+	h.logger = h.logger.ReSession("find-vms-by-filter")
 
 	response := &models.VmsResponse{}
 	request := params.Body
@@ -189,7 +188,7 @@ func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middlewar
 
 func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("find-vms-by-deployment")
+	h.logger = h.logger.ReSession("find-vms-by-deployment")
 
 	response := &models.VmsResponse{}
 	request := params.Deployment
@@ -206,7 +205,7 @@ func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) mid
 
 func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams) middleware.Responder {
 	var err error
-	h.logger = h.logger.Session("find-vms-by-state")
+	h.logger = h.logger.ReSession("find-vms-by-state")
 
 	response := &models.VmsResponse{}
 	request := params.States

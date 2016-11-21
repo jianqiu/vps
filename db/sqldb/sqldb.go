@@ -48,7 +48,7 @@ flavor string,
 func (db *SQLDB) transact(logger lager.Logger, f func(logger lager.Logger, tx *sql.Tx) error) error {
 	var err error
 
-	for attempts := 0; attempts < 3; attempts++ {
+	for attempts := 0; attempts < 6; attempts++ {
 		err = func() error {
 			tx, err := db.db.Begin()
 			if err != nil {
