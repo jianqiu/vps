@@ -93,9 +93,13 @@ func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
 
 	err = h.controller.DeleteVM(h.logger, params.Cid)
 	if err != nil {
-		unExpectedResponse := vm.NewDeleteVMDefault(500)
-		unExpectedResponse.SetPayload(models.ConvertError(err))
-		return unExpectedResponse
+		if models.ConvertError(err).Equal(models.ErrResourceNotFound){
+			return vm.NewDeleteVMNotFound()
+		} else {
+			unExpectedResponse := vm.NewDeleteVMDefault(500)
+			unExpectedResponse.SetPayload(models.ConvertError(err))
+			return unExpectedResponse
+		}
 	}
 
 	return vm.NewDeleteVMNoContent().WithPayload("vm removed")
@@ -110,13 +114,13 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 
 	response.VM, err = h.controller.VirtualGuestByCid(h.logger,params.Cid)
 	if err != nil {
-		unExpectedResponse := vm.NewGetVMByCidDefault(500)
-		unExpectedResponse.SetPayload(models.ConvertError(err))
-		return unExpectedResponse
-	}
-	if response.VM == nil {
-		getVMByCidNotFound := vm.NewGetVMByCidNotFound()
-		return getVMByCidNotFound
+		if models.ConvertError(err).Equal(models.ErrResourceNotFound){
+			return vm.NewGetVMByCidNotFound()
+		} else {
+			unExpectedResponse := vm.NewGetVMByCidDefault(500)
+			unExpectedResponse.SetPayload(models.ConvertError(err))
+			return unExpectedResponse
+		}
 	}
 
 	return vm.NewGetVMByCidOK().WithPayload(response)
@@ -147,16 +151,16 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 	h.logger = h.logger.Session("update-vm-with-state")
 
 	vmId := params.Cid
-	if vmId == 0 {
-		 return vm.NewUpdateVMWithStateNotFound()
-	}
-
 	updateData := params.Body
 	err = h.controller.UpdateVMWithState(h.logger, vmId, &updateData.State)
 	if err != nil {
-		unExpectedResponse := vm.NewListVMDefault(500)
-		unExpectedResponse.SetPayload(models.ConvertError(err))
-		return unExpectedResponse
+		if models.ConvertError(err).Equal(models.ErrResourceNotFound){
+			return vm.NewUpdateVMWithStateNotFound()
+		} else {
+			unExpectedResponse := vm.NewUpdateVMWithStateDefault(500)
+			unExpectedResponse.SetPayload(models.ConvertError(err))
+			return unExpectedResponse
+		}
 	}
 
 	return vm.NewUpdateVMOK().WithPayload("updated successfully")
