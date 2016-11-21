@@ -7,6 +7,7 @@ import (
 
 	"github.com/jianqiu/vps/models"
 	"code.cloudfoundry.org/lager"
+	"fmt"
 )
 
 func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*models.VM, error) {
@@ -92,6 +93,12 @@ func (db *SQLDB) OrderVirtualGuestToProvision(logger lager.Logger, filter models
 	var err error
 
 	err = db.transact(logger, func(logger lager.Logger, tx *sql.Tx) error {
+		_, err := db.db.Exec(fmt.Sprintf("LOCK TABLE %s", virtualGuests))
+		if err != nil {
+			logger.Error("lock table error", err)
+			return err
+		}
+
 		vm, err = db.fetchOneVMWithFilter(logger, filter, tx)
 		if err != nil {
 			logger.Error("failed-locking-vm", err)
@@ -128,7 +135,7 @@ func (db *SQLDB) VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, 
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
-	row, _ := db.one(logger, db.db, virtualGuests,
+	row := db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, NoLockRow,
 		"cid = ?", cid,
 	)
@@ -140,7 +147,7 @@ func (db *SQLDB) VirtualGuestByIP(logger lager.Logger, ip string) (*models.VM, e
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
-	row, _:= db.one(logger, db.db, virtualGuests,
+	row := db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, NoLockRow,
 		"ip = ?", ip,
 	)
@@ -453,7 +460,7 @@ func (db *SQLDB) DeleteVirtualGuestFromPool(logger lager.Logger, cid int32) erro
 }
 
 func (db *SQLDB) fetchVMForUpdate(logger lager.Logger, cid int32, tx *sql.Tx) (*models.VM, error) {
-	row, _:= db.one(logger, tx, virtualGuests,
+	row := db.one(logger, tx, virtualGuests,
 		virtualGuestColumns, LockRow,
 		"cid = ?", cid,
 	)
@@ -502,7 +509,7 @@ func (db *SQLDB) fetchOneVMWithFilter(logger lager.Logger, filter models.VMFilte
 	default:
 	}
 
-	row, _ := db.one(logger, db.db, virtualGuests,
+	row := db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, LockRow,
 		strings.Join(wheres, " AND "), values...,
 	)

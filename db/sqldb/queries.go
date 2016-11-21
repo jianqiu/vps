@@ -118,7 +118,7 @@ func (db *SQLDB) countVirtualGuestsByState(logger lager.Logger, q Queryable) (de
 func (db *SQLDB) one(logger lager.Logger, q Queryable, table string,
 columns ColumnList, lockRow RowLock,
 wheres string, whereBindings ...interface{},
-) (*sql.Row, error) {
+) *sql.Row {
 	query := fmt.Sprintf("SELECT %s FROM %s\n", strings.Join(columns, ", "), table)
 
 	if len(wheres) > 0 {
@@ -131,16 +131,10 @@ wheres string, whereBindings ...interface{},
 		query += "\nFOR UPDATE"
 	}
 
-	_, err := q.Exec(fmt.Sprintf("LOCK TABLE %s", table))
-	if err != nil {
-		logger.Error("lock table error", err)
-		return nil, err
-	}
-
 	logger.Info("one", lager.Data{"query": db.rebind(query)})
 	logger.Info("one", lager.Data{"bindings": whereBindings})
 
-	return q.QueryRow(db.rebind(query), whereBindings...), nil
+	return q.QueryRow(db.rebind(query), whereBindings...)
 }
 
 // SELECT <columns> FROM <table> WHERE ... [FOR UPDATE]
