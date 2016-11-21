@@ -128,7 +128,7 @@ func (db *SQLDB) VirtualGuestByCID(logger lager.Logger, cid int32) (*models.VM, 
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
-	row := db.one(logger, db.db, virtualGuests,
+	row, _ := db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, NoLockRow,
 		"cid = ?", cid,
 	)
@@ -140,7 +140,7 @@ func (db *SQLDB) VirtualGuestByIP(logger lager.Logger, ip string) (*models.VM, e
 	logger.Debug("starting")
 	defer logger.Debug("complete")
 
-	row := db.one(logger, db.db, virtualGuests,
+	row, _:= db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, NoLockRow,
 		"ip = ?", ip,
 	)
@@ -453,7 +453,7 @@ func (db *SQLDB) DeleteVirtualGuestFromPool(logger lager.Logger, cid int32) erro
 }
 
 func (db *SQLDB) fetchVMForUpdate(logger lager.Logger, cid int32, tx *sql.Tx) (*models.VM, error) {
-	row := db.one(logger, tx, virtualGuests,
+	row, _:= db.one(logger, tx, virtualGuests,
 		virtualGuestColumns, LockRow,
 		"cid = ?", cid,
 	)
@@ -502,7 +502,7 @@ func (db *SQLDB) fetchOneVMWithFilter(logger lager.Logger, filter models.VMFilte
 	default:
 	}
 
-	row := db.one(logger, db.db, virtualGuests,
+	row, _ := db.one(logger, db.db, virtualGuests,
 		virtualGuestColumns, LockRow,
 		strings.Join(wheres, " AND "), values...,
 	)
