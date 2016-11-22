@@ -7,7 +7,6 @@ import (
 
 	"github.com/jianqiu/vps/models"
 	"code.cloudfoundry.org/lager"
-	"fmt"
 )
 
 func (db *SQLDB) VirtualGuests(logger lager.Logger, filter models.VMFilter) ([]*models.VM, error) {
