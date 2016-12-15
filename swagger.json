@@ -16,11 +16,23 @@
     "host": "vps.swagger.io",
     "basePath": "/v2",
     "schemes": [
-        "http"
+        "http",
+        "https"
     ],
+    "securityDefinitions": {
+        "basicAuth": {
+            "type": "basic",
+            "description": "HTTP Basic Authentication. Works over `HTTP` and `HTTPS`"
+        }
+    },
     "paths": {
         "/vms": {
             "post": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -60,6 +72,11 @@
                 }
             },
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -88,6 +105,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -132,6 +154,11 @@
         },
         "/vms/findByFilters": {
             "post": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -176,6 +203,11 @@
         },
         "/vms/order": {
             "post": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -220,6 +252,11 @@
         },
         "/vms/findByDeployment": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -263,6 +300,11 @@
         },
         "/vms/findByState": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -306,6 +348,11 @@
         },
         "/vms/{cid}": {
             "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -344,6 +391,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -394,6 +446,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
                 "tags": [
                     "vm"
                 ],
@@ -434,6 +491,17 @@
         }
     },
     "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "State": {
             "type": "string",
             "description": "Vm State",
@@ -524,6 +592,9 @@
                 "ip": {
                     "type": "string",
                     "format": "ipv4"
+                },
+                "deploymentName": {
+                    "type": "string"
                 },
                 "state": {
                     "$ref": "#/definitions/State"

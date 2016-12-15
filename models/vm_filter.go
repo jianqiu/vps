@@ -20,6 +20,9 @@ type VMFilter struct {
 	// cpu
 	CPU int32 `json:"cpu,omitempty"`
 
+	// deployment name
+	DeploymentName string `json:"deploymentName,omitempty"`
+
 	// ip
 	IP strfmt.IPv4 `json:"ip,omitempty"`
 
@@ -31,9 +34,6 @@ type VMFilter struct {
 
 	// public vlan
 	PublicVlan int32 `json:"public_vlan,omitempty"`
-
-	// deployment name
-	DeploymentName string `json:"deployment_name,omitempty"`
 
 	// state
 	State State `json:"state,omitempty"`

@@ -101,8 +101,6 @@ func (db *SQLDB) convertMySQLError(err *mysql.MySQLError) *models.Error {
 	default:
 		return models.ErrUnknownError
 	}
-
-	return nil
 }
 
 func (db *SQLDB) convertPostgresError(err *pq.Error) *models.Error {

@@ -36,7 +36,7 @@ type VMHandler struct {
 	controller VirtualGuestController
 }
 
-func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
+func (h *VMHandler) AddVM (params vm.AddVMParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("add-vm")
 
@@ -51,7 +51,7 @@ func (h *VMHandler) AddVM (params vm.AddVMParams) middleware.Responder {
 	return vm.NewAddVMOK().WithPayload("added successfully")
 }
 
-func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.Responder {
+func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("order-vm-by-filter")
 
@@ -72,7 +72,7 @@ func (h *VMHandler) OrderVmByFilter(params vm.OrderVMByFilterParams) middleware.
 	return vm.NewOrderVMByFilterOK().WithPayload(response)
 }
 
-func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {
+func (h *VMHandler) UpdateVM (params vm.UpdateVMParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("update-vm")
 
@@ -87,7 +87,7 @@ func (h *VMHandler) UpdateVM (params vm.UpdateVMParams) middleware.Responder {
 	return vm.NewUpdateVMOK().WithPayload("updated successfully")
 }
 
-func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
+func (h *VMHandler) DeleteVM(params vm.DeleteVMParams, user *models.User)  middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("delete-vm")
 
@@ -106,7 +106,7 @@ func (h *VMHandler) DeleteVM(params vm.DeleteVMParams)  middleware.Responder {
 }
 
 
-func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder {
+func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("get-vm-by-cid")
 
@@ -126,7 +126,7 @@ func (h *VMHandler) GetVMByCid(params vm.GetVMByCidParams) middleware.Responder 
 	return vm.NewGetVMByCidOK().WithPayload(response)
 }
 
-func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
+func (h *VMHandler) ListVM(params vm.ListVMParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger =  h.logger.ReSession("list-vms")
 
@@ -145,7 +145,7 @@ func (h *VMHandler) ListVM(params vm.ListVMParams) middleware.Responder {
 	return vm.NewListVMOK().WithPayload(response)
 }
 
-func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middleware.Responder {
+func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("update-vm-with-state")
 
@@ -165,7 +165,7 @@ func (h *VMHandler) UpdateVMWithState(params vm.UpdateVMWithStateParams) middlew
 	return vm.NewUpdateVMOK().WithPayload("updated successfully")
 }
 
-func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middleware.Responder {
+func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("find-vms-by-filter")
 
@@ -186,7 +186,7 @@ func (h *VMHandler) FindVmsByFilters(params vm.FindVmsByFiltersParams) middlewar
 	return vm.NewFindVmsByFiltersOK().WithPayload(response)
 }
 
-func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) middleware.Responder {
+func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("find-vms-by-deployment")
 
@@ -203,7 +203,7 @@ func (h *VMHandler) FindVmsByDeployment(params vm.FindVmsByDeploymentParams) mid
 	return vm.NewFindVmsByDeploymentOK().WithPayload(response)
 }
 
-func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams) middleware.Responder {
+func (h *VMHandler) FindVmsByStates(params vm.FindVmsByStatesParams, user *models.User) middleware.Responder {
 	var err error
 	h.logger = h.logger.ReSession("find-vms-by-state")
 

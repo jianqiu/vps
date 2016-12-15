@@ -20,12 +20,15 @@ var _ = Describe("VmHandlerFunc", func() {
 		responseResponder middleware.Responder
 
 		handler *handlers.VMHandler
+
+		principal *models.User
 	)
 
 	BeforeEach(func() {
 		logger = lagertest.NewTestLogger("test")
 		controller = &fake_controllers.FakeVirtualGuestController{}
 		handler = handlers.NewVmHandler(logger, controller)
+		principal = &models.User{}
 	})
 
 	Describe("ListVM", func() {
@@ -42,7 +45,7 @@ var _ = Describe("VmHandlerFunc", func() {
 		})
 
 		JustBeforeEach(func() {
-			responseResponder = handler.ListVM(params)
+			responseResponder = handler.ListVM(params, principal)
 		})
 
 		Context("when reading virtual guests from controller succeeds", func() {
@@ -101,7 +104,7 @@ var _ = Describe("VmHandlerFunc", func() {
 		})
 
 		JustBeforeEach(func() {
-			responseResponder = handler.GetVMByCid(params)
+			responseResponder = handler.GetVMByCid(params, principal)
 		})
 
 		Context("when reading a virtual guest from the controller succeeds", func() {
@@ -163,7 +166,7 @@ var _ = Describe("VmHandlerFunc", func() {
 			})
 
 			JustBeforeEach(func() {
-				responseResponder = handler.DeleteVM(params)
+				responseResponder = handler.DeleteVM(params, principal)
 			})
 
 			Context("when deleting the virtual guest succeeds", func() {
@@ -214,7 +217,7 @@ var _ = Describe("VmHandlerFunc", func() {
 		})
 
 		JustBeforeEach(func() {
-			responseResponder = handler.AddVM(params)
+			responseResponder = handler.AddVM(params, principal)
 		})
 
 		Context("when the virtual guest is added successful", func() {

@@ -11,10 +11,12 @@ import (
 	loads "github.com/go-openapi/loads"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	security "github.com/go-openapi/runtime/security"
 	spec "github.com/go-openapi/spec"
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/jianqiu/vps/models"
 	"github.com/jianqiu/vps/restapi/operations/vm"
 )
 
@@ -45,6 +47,10 @@ type SoftLayerVMPoolAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+
+	// BasicAuthAuth registers a function that takes username and password and returns a principal
+	// it performs authentication with basic auth
+	BasicAuthAuth func(string, string) (*models.User, error)
 
 	// VMAddVMHandler sets the operation handler for the add Vm operation
 	VMAddVMHandler vm.AddVMHandler
@@ -129,6 +135,10 @@ func (o *SoftLayerVMPoolAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.BasicAuthAuth == nil {
+		unregistered = append(unregistered, "BasicAuthAuth")
+	}
+
 	if o.VMAddVMHandler == nil {
 		unregistered = append(unregistered, "vm.AddVMHandler")
 	}
@@ -184,7 +194,19 @@ func (o *SoftLayerVMPoolAPI) ServeErrorFor(operationID string) func(http.Respons
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *SoftLayerVMPoolAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "basicAuth":
+			_ = scheme
+			result[name] = security.BasicAuth(func(username, password string) (interface{}, error) {
+				return o.BasicAuthAuth(username, password)
+			})
+
+		}
+	}
+	return result
 
 }
 

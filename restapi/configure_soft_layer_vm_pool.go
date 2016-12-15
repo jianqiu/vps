@@ -11,9 +11,11 @@ import (
 	"github.com/jianqiu/vps/restapi/operations/vm"
 	"github.com/jianqiu/vps/restapi/handlers"
 	"github.com/jianqiu/vps/db"
+	"github.com/jianqiu/vps/models"
 	"github.com/jianqiu/vps/controllers"
 
 	"code.cloudfoundry.org/lager"
+	"strings"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -40,6 +42,16 @@ db db.DB,
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	api.BasicAuthAuth = func(user string, pass string) (*models.User, error) {
+		if strings.EqualFold(user, "admin") && strings.EqualFold(pass, "pass"){
+			return &models.User{
+				Username: user,
+				Password: pass,
+			}, nil
+		}
+		return nil, errors.Unauthenticated(user)
+	}
+
 	vmController := controllers.NewVirtualGuestController(db)
 	vmHandler := handlers.NewVmHandler(logger,vmController)
 
@@ -62,6 +74,7 @@ db db.DB,
 // The TLS configuration before HTTPS server starts.
 func configureTLS(tlsConfig *tls.Config) {
 	// Make all necessary changes to the TLS configuration here.
+	tlsConfig.InsecureSkipVerify = true
 }
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.

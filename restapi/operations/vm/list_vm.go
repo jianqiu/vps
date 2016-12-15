@@ -7,19 +7,20 @@ import (
 	"net/http"
 
 	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/jianqiu/vps/models"
 )
 
 // ListVMHandlerFunc turns a function with the right signature into a list Vm handler
-type ListVMHandlerFunc func(ListVMParams) middleware.Responder
+type ListVMHandlerFunc func(ListVMParams, *models.User) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn ListVMHandlerFunc) Handle(params ListVMParams) middleware.Responder {
-	return fn(params)
+func (fn ListVMHandlerFunc) Handle(params ListVMParams, principal *models.User) middleware.Responder {
+	return fn(params, principal)
 }
 
 // ListVMHandler interface for that can handle valid list Vm params
 type ListVMHandler interface {
-	Handle(ListVMParams) middleware.Responder
+	Handle(ListVMParams, *models.User) middleware.Responder
 }
 
 // NewListVM creates a new http.Handler for the list Vm operation
@@ -41,12 +42,22 @@ func (o *ListVM) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, _ := o.Context.RouteInfo(r)
 	var Params = NewListVMParams()
 
+	uprinc, err := o.Context.Authorize(r, route)
+	if err != nil {
+		o.Context.Respond(rw, r, route.Produces, route, err)
+		return
+	}
+	var principal *models.User
+	if uprinc != nil {
+		principal = uprinc.(*models.User) // this is really a models.User, I promise
+	}
+
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
 		return
 	}
 
-	res := o.Handler.Handle(Params) // actually handle the request
+	res := o.Handler.Handle(Params, principal) // actually handle the request
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 

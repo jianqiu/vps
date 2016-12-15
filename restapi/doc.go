@@ -10,6 +10,7 @@ http://helloreverb.com/terms/
 
     Schemes:
       http
+      https
     Host: vps.swagger.io
     BasePath: /v2
     Version: 0.0.1
